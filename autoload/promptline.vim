@@ -65,11 +65,11 @@ fun! s:validate_file(overwrite, file)
 endfun
 
 fun! s:bg(color)
-  return printf('"\[\e[%d;5;%dm\]"', s:SHELL_BG, a:color)
+  return printf('"${wrap}%d;5;%d${end_wrap}"', s:SHELL_BG, a:color)
 endfun
 
 fun! s:fg(color)
-  return printf('"\[\e[%d;5;%dm\]"', s:SHELL_FG, a:color)
+  return printf('"${wrap}%d;5;%d${end_wrap}"', s:SHELL_FG, a:color)
 endfun
 
 fun! promptline#create_bash_snapthot(file, theme, preset) abort
@@ -78,10 +78,18 @@ fun! promptline#create_bash_snapthot(file, theme, preset) abort
         \'sections': []}
 
   let shell_colors = []
+  let text_modifiers = []
   let section_count = 0
 
-  let ordered_sections = s:get_ordered_section_names(a:preset)
+  let shell_colors += [ "  local esc=$'\e[' end_esc=m" ]
+  let shell_colors += [ '  if [[ -n ${ZSH_VERSION-} ]]; then' ]
+  let shell_colors += [ "    local noprint='%{' end_noprint='%}'" ]
+  let shell_colors += [ '  else' ]
+  let shell_colors += [ "    local noprint='\\[' end_noprint='\\]'" ]
+  let shell_colors += [ '  fi' ]
+  let shell_colors += [ '  local wrap="$noprint$esc" end_wrap="$end_esc$end_noprint"' ]
 
+  let ordered_sections = s:get_ordered_section_names(a:preset)
   for section_name in (ordered_sections)
     if !has_key(a:theme, section_name)
       echohl WarningMsg | echomsg "promptline: theme doesn't define colors for '". section_name . "' section. Skipping section" | echohl None
@@ -102,6 +110,12 @@ fun! promptline#create_bash_snapthot(file, theme, preset) abort
   call s:append_closing_section( prompt )
 
   let symbols = promptline#get_symbols()
+
+  let text_modifiers += [ '  local bold="${wrap}1${end_wrap}"' ]
+  let text_modifiers += [ '  local unbold="${wrap}22${end_wrap}"' ]
+  let text_modifiers += [ '  local reset="${wrap}0${end_wrap}"' ]
+  let text_modifiers += [ '  local reset_bg="${wrap}49${end_wrap}"' ]
+
   let snapshot_lines = []
   for function_body in values(prompt.functions)
     let snapshot_lines += function_body
@@ -111,11 +125,6 @@ fun! promptline#create_bash_snapthot(file, theme, preset) abort
         \'function __promptline {',
         \'  local last_exit_code="$?"',
         \'  local space=" "',
-        \'  local bold="\[\e[1m\]"',
-        \'  local faint="\[\e[2m\]"',
-        \'  local unbold="\[\e[22m\]"',
-        \'  local reset="\[\e[0m\]"',
-        \'  local reset_bg="\[\e[49m\]"',
         \'  local sep="' . symbols.left . '"',
         \'  local alt_sep="' . symbols.left_alt . '"',
         \'  local dir_sep="' . symbols.dir_sep . '"',
@@ -124,9 +133,19 @@ fun! promptline#create_bash_snapthot(file, theme, preset) abort
         \'']
 
   let snapshot_lines += shell_colors
+  let snapshot_lines += text_modifiers
   let snapshot_lines += [ '  PS1="' . join(prompt.sections, '') . '"' ]
   let snapshot_lines += [ '}' ]
-  let snapshot_lines += [ 'PROMPT_COMMAND=__promptline' ]
+
+  let snapshot_lines += [ '' ]
+  let snapshot_lines += [ 'if [[ -n ${ZSH_VERSION-} ]]; then' ]
+  let snapshot_lines += [ '  if [[ ! ${precmd_functions[(r)__promptline]} == __promptline ]]; then' ]
+  let snapshot_lines += [ '    precmd_functions+=(__promptline)' ]
+  let snapshot_lines += [ '  fi' ]
+  let snapshot_lines += [ 'else' ]
+  let snapshot_lines += [ '  PROMPT_COMMAND=__promptline' ]
+  let snapshot_lines += [ 'fi' ]
+
 
   if writefile(snapshot_lines, a:file) != 0
     throw "promptline: Failed writing file " . a:file
