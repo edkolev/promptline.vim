@@ -2,11 +2,11 @@
 
 Simple shell prompt generator with support for powerline symbols and airline integration
 
-TODO screenshot
+![promptline_head](https://f.cloud.github.com/assets/1532071/1797552/21be199a-6aef-11e3-8397-67754f12998d.png)
 
 ## Features
 
-- the generated prompt is a plain shell script, no external interpreters (python, nodejs, not even grep, awk, ...) slowing down the prompt
+- the generated prompt is a plain shell script, no external interpreters (python, nodejs, not even grep, awk, ...)
 - use [vim-airline][1] colors, so the prompt inherits colors from vim's statusline
 - preloaded with stock themes and presets, which can be combined in multiple ways
 - configure the prompt with a simple hash, in case stock presets don't meet your needs
@@ -15,12 +15,12 @@ TODO screenshot
 
 Note: as of now, this plugin has been developed and tested in bash only.
 
-## Quick Start with airline installed
+#### Quick Start with airline installed
 
 1. In vim `:PromptlineBashSnapshot ~/.shell_prompt.sh airline`
 2. In bash `source ~/.shell_prompt.sh`
 
-## Quick Start
+#### Quick Start
 
 1. In vim `:PromptlineBashSnapshot ~/.shell_prompt.sh`
 2. In bash `source ~/.shell_prompt.sh`
@@ -58,7 +58,6 @@ Set `g:promptline_preset` to a stock preset. Running `:PromptlineBashSnapshot [f
 let g:promptline_preset = 'clear'
 " or
 let g:promptline_preset = 'full'
-
 " other presets available in autoload/promptline/presets/*
 ```
 
@@ -70,8 +69,7 @@ Set `g:promptline_theme` to a stock theme. Running `:PromptlineBashSnapshot [fil
 let g:promptline_theme = 'airline'
 " or
 let g:promptline_theme = 'jelly'
-
-" other themes available in autoload/promptline/presets/*
+" other themes available in autoload/promptline/themes/*
 ```
 
 ## Customization
