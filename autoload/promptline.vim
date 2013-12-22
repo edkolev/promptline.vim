@@ -142,7 +142,7 @@ endfun
 fun! s:append_section( prompt, section_name, section_slices, section_order ) abort
   if len(a:section_slices) == 1
     let slice = a:section_slices[0]
-    if type(slice) == type({}) && get(slice, 'can_be_empty')
+    if type(slice) == type({}) && get(slice, 'can_be_empty') && a:section_order != 1
       return s:append_possibly_empty_section( a:prompt, a:section_name, a:section_slices, a:section_order )
     endif
   endif
