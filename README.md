@@ -7,11 +7,11 @@ Simple shell prompt generator with support for powerline symbols and airline int
 ## Features
 
 - **Create a plain .sh file to manage the prompt.** The generated file can be sourced by the shell on login.
-- **Very fast prompt.** No external binaries are spawned to render the prompt (no python, no nodejs, not even grep or sed)
+- **Very fast prompt.** No external binaries are spawned to render the prompt (no python, not even grep or sed)
 - **Use [vim-airline][1] colors**, so the prompt shares the same colors with vim's statusline
 - **Preloaded with stock themes and presets**, which can be combined in multiple ways
 - **Configure the prompt with a simple hash**, in case stock presets don't meet your needs
-- **Preloaded with commonly used prompt sections** e.g. branch name, exit code of last command (if not zero)
+- **Preloaded with commonly used prompt sections** e.g. branch name, last exit code (if not zero)
 
 The plugin has been tested in bash and zsh
 
@@ -166,7 +166,7 @@ The plugin's files follow the standard layout for vim plugins.
 ## Rationale
 
 I wanted unified colors throughout my most often used terminal applications (editor, multiplexer, shell).
-That motivated me to create this plugin, was well as [tmuxline][3]
+That motivated me to create this plugin, as well as [tmuxline][3]
 
 There are similar plugins, but all of them seem to use an external (to the shell) program, e.g. python, nodejs.
 I think the shell's prompt should be as fast as possible, without being slowed by an external process.
