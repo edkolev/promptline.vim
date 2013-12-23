@@ -6,24 +6,24 @@ Simple shell prompt generator with support for powerline symbols and airline int
 
 ## Features
 
-- the generated prompt is a plain shell script, no external interpreters (python, nodejs, not even grep, awk, ...)
-- use [vim-airline][1] colors, so the prompt inherits colors from vim's statusline
-- preloaded with stock themes and presets, which can be combined in multiple ways
-- configure the prompt with a simple hash, in case stock presets don't meet your needs
-- preloaded with commonly used prompt sections (e.g. VCS branch)
-- create a snapshot file, which can be sourced by the shell on login
+- **Create a plain .sh file to manage the prompt.** The generated file can be sourced by the shell on login.
+- **Very fast prompt.** No external binaries are spawned to render the prompt (no python, no nodejs, not even grep or sed)
+- **Use [vim-airline][1] colors**, so the prompt shares the same colors with vim's statusline
+- **Preloaded with stock themes and presets**, which can be combined in multiple ways
+- **Configure the prompt with a simple hash**, in case stock presets don't meet your needs
+- **Preloaded with commonly used prompt sections** e.g. branch name, exit code of last command (if not zero)
 
-Note: the plugin has been tested in bash and zsh
+The plugin has been tested in bash and zsh
 
 #### Quick Start with airline installed
 
 1. In vim `:PromptlineSnapshot ~/.shell_prompt.sh airline`
-2. In bash `source ~/.shell_prompt.sh`
+2. In bash/zsh `source ~/.shell_prompt.sh`
 
 #### Quick Start
 
 1. In vim `:PromptlineSnapshot ~/.shell_prompt.sh`
-2. In bash `source ~/.shell_prompt.sh`
+2. In bash/zsh `source ~/.shell_prompt.sh`
 
 ## Usage
 
@@ -44,7 +44,7 @@ Specify theme and preset:
 
 The created file should be sourced by the shell
 ```
-# in .bash.rc
+# in .bash.rc / .zshrc
 source [file]
 ```
 
@@ -86,23 +86,20 @@ let g:promptline_preset = {
 
 TODO screenshot
 
-bash will replace `\X'. Excerpts from bash man page:
-```
-\u     the username of the current user
-\w     the current working directory, with $HOME abbreviated with a tilde
-\W     the basename of the current working directory, with $HOME abbreviated with a tilde
-\h     the hostname up to the first `.'
-\H     the hostname
-\j     the number of jobs currently managed by the shell
-\$     if the effective UID is 0, a #, otherwise a $
+bash will replace `\h \u \w`. zsh's syntax for replacements is a bit different:
 
-$(command) allows the output of a command to replace the command name
-
-\t     the current time in 24-hour HH:MM:SS format
-\T     the current time in 12-hour HH:MM:SS format
-\@     the current time in 12-hour am/pm format
-\A     the current time in 24-hour HH:MM format
-```
+bash | zsh | excerpts from bash man page
+:---: | :---: | ---
+\u | %n |   the username of the current user
+\w | %~ |   the current working directory, with $HOME abbreviated with a tilde
+\W | %d |   the basename of the current working directory, with $HOME abbreviated with a tilde
+\h | %m |  the hostname up to the first `.'
+\H | %M |  the hostname
+\j | %j | the number of jobs currently managed by the shell
+\$ | %# | if the effective UID is 0, a #, otherwise a $
+$(command) | $(command) | allows the output of a command to replace the command name
+\t | %* |  the current time in 24-hour HH:MM:SS format
+\A | %T |  the current time in 24-hour HH:MM format
 
 If the arrays in `g:promptline_preset` hold multiple values, a powerline separator will be placed between them.
 ```
@@ -127,6 +124,7 @@ promptline comes preloaded with a few commonly used commands:
 - git branch (displayed in git repos only)
 - job count (displayed if jobs != 0)
 - last exit code (displayed if exit code != 0)
+
 ```
 let g:promptline_preset = {
         \'a'    : [ '\h', '\u' ],
