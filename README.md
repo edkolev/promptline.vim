@@ -13,33 +13,33 @@ Simple shell prompt generator with support for powerline symbols and airline int
 - preloaded with commonly used prompt sections (e.g. VCS branch)
 - create a snapshot file, which can be sourced by the shell on login
 
-Note: as of now, this plugin has been developed and tested in bash only.
+Note: the plugin has been tested in bash and zsh
 
 #### Quick Start with airline installed
 
-1. In vim `:PromptlineBashSnapshot ~/.shell_prompt.sh airline`
+1. In vim `:PromptlineSnapshot ~/.shell_prompt.sh airline`
 2. In bash `source ~/.shell_prompt.sh`
 
 #### Quick Start
 
-1. In vim `:PromptlineBashSnapshot ~/.shell_prompt.sh`
+1. In vim `:PromptlineSnapshot ~/.shell_prompt.sh`
 2. In bash `source ~/.shell_prompt.sh`
 
 ## Usage
 
 Create a snapshot file with default prompt.
 ```
-:PromptlineBashSnapshot [file]
+:PromptlineSnapshot [file]
 ```
 
 Specify theme:
 ```
-:PromptlineBashSnapshot [file] [theme]
+:PromptlineSnapshot [file] [theme]
 ```
 
 Specify theme and preset:
 ```
-:PromptlineBashSnapshot [file] [theme] [preset]
+:PromptlineSnapshot [file] [theme] [preset]
 ```
 
 The created file should be sourced by the shell
@@ -52,7 +52,7 @@ source [file]
 
 ### Stock preset
 
-Set `g:promptline_preset` to a stock preset. Running `:PromptlineBashSnapshot [file]` will use `g:promptline_preset` as `[preset]`
+Set `g:promptline_preset` to a stock preset. Running `:PromptlineSnapshot [file]` will use `g:promptline_preset` as `[preset]`
 
 ```
 let g:promptline_preset = 'clear'
@@ -63,7 +63,7 @@ let g:promptline_preset = 'full'
 
 ### Stock theme
 
-Set `g:promptline_theme` to a stock theme. Running `:PromptlineBashSnapshot [file]` will use `g:promptline_theme` as `[theme]`
+Set `g:promptline_theme` to a stock theme. Running `:PromptlineSnapshot [file]` will use `g:promptline_theme` as `[theme]`
 
 ```
 let g:promptline_theme = 'airline'
