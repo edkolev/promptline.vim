@@ -47,5 +47,5 @@ function! s:command_completion(A,L,P)
   return []
 endfun
 
-command! -nargs=+ -bang -complete=customlist,<sid>command_completion PromptlineSnapshot call promptline#bash_snapshot(strlen("<bang>"), <f-args>)
+command! -nargs=+ -bang -complete=customlist,<sid>command_completion PromptlineSnapshot call promptline#snapshot(strlen("<bang>"), <f-args>)
 

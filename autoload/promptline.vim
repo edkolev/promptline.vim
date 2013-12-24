@@ -27,15 +27,7 @@ let s:simple_symbols = {
     \ 'vcs_branch' : '',
     \ 'space'      : ' '}
 
-let s:snapshot = []
-
-fun! promptline#get_symbols()
-  let use_powerline_symbols = get(g:, 'promptline_powerline_symbols', 1)
-  let separators = use_powerline_symbols ? s:powerline_symbols : s:simple_symbols
-  return extend(separators, get(g:, 'promptline_symbols', {}))
-endfun
-
-fun! promptline#bash_snapshot(overwrite, file, ...) abort
+fun! promptline#snapshot(overwrite, file, ...) abort
   let input_theme = get(a:, 1, get(g:, 'promptline_theme', s:default_theme))
   let input_preset = get(a:, 2, get(g:, 'promptline_preset', s:default_preset))
 
@@ -43,7 +35,7 @@ fun! promptline#bash_snapshot(overwrite, file, ...) abort
     let file = s:validate_file(a:overwrite, a:file)
     let theme = promptline#themes#load_theme(input_theme)
     let preset = promptline#presets#load_preset(input_preset)
-    call promptline#create_bash_snapthot(file, theme, preset)
+    call promptline#create_snapshot(file, theme, preset)
   catch /^promptline:/
     echohl ErrorMsg | echomsg v:exception | echohl None
   endtry
@@ -72,22 +64,51 @@ fun! s:fg(color)
   return printf('"${wrap}%d;5;%d${end_wrap}"', s:SHELL_FG, a:color)
 endfun
 
-fun! promptline#create_bash_snapthot(file, theme, preset) abort
+fun! promptline#create_snapshot(file, theme, preset) abort
   let prompt = {
         \'functions': {},
         \'sections': []}
 
-  let shell_colors = []
-  let text_modifiers = []
-  let section_count = 0
+  let shell_escape_codes       = s:get_shell_escape_codes()
+  let symbol_definitions       = s:get_symbol_definitions()
+  let text_attribute_modifiers = s:get_text_attribute_modifiers()
+  let colors_and_sections      = s:get_colors_and_sections(prompt, a:theme, a:preset)
+  let function_definitions     = s:get_function_definitions(prompt)
+  let prompt_installation      = s:get_prompt_installation()
 
-  let shell_colors += [ "  local esc=$'\e[' end_esc=m" ]
-  let shell_colors += [ '  if [[ -n ${ZSH_VERSION-} ]]; then' ]
-  let shell_colors += [ "    local noprint='%{' end_noprint='%}'" ]
-  let shell_colors += [ '  else' ]
-  let shell_colors += [ "    local noprint='\\[' end_noprint='\\]'" ]
-  let shell_colors += [ '  fi' ]
-  let shell_colors += [ '  local wrap="$noprint$esc" end_wrap="$end_esc$end_noprint"' ]
+  let snapshot_lines =
+        \ function_definitions +
+        \ [''] +
+        \ ['function __promptline {'] +
+        \ ['  local last_exit_code="$?"'] +
+        \ [''] +
+        \ shell_escape_codes +
+        \ symbol_definitions +
+        \ text_attribute_modifiers +
+        \ colors_and_sections +
+        \ ['  PS1="' . join(prompt.sections, '') . '"' ] +
+        \ ['}' ] +
+        \ prompt_installation
+
+  if writefile(snapshot_lines, a:file) != 0
+    throw "promptline: Failed writing file " . a:file
+  endif
+endfun
+
+fun! s:get_shell_escape_codes()
+  return [
+        \"  local esc=$'\e[' end_esc=m",
+        \'  if [[ -n ${ZSH_VERSION-} ]]; then',
+        \"    local noprint='%{' end_noprint='%}'",
+        \'  else',
+        \"    local noprint='\\[' end_noprint='\\]'",
+        \'  fi',
+        \'  local wrap="$noprint$esc" end_wrap="$end_esc$end_noprint"']
+endfun
+
+fun! s:get_colors_and_sections( prompt, theme, preset )
+  let section_count = 0
+  let colors_and_sections = []
 
   let ordered_sections = s:get_ordered_section_names(a:preset)
   for section_name in (ordered_sections)
@@ -99,57 +120,58 @@ fun! promptline#create_bash_snapthot(file, theme, preset) abort
     let section_count += 1
     let [fg, bg] = a:theme[section_name][s:FG : s:BG]
 
-    let shell_colors += [ '  local ' .section_name. '_fg=' . s:fg(fg) ]
-    let shell_colors += [ '  local ' .section_name. '_bg=' . s:bg(bg) ]
-    let shell_colors += [ '  local ' .section_name. '_sep_fg=' . s:fg(bg) ]
+    let colors_and_sections += [ '  local ' .section_name. '_fg=' . s:fg(fg) ]
+    let colors_and_sections += [ '  local ' .section_name. '_bg=' . s:bg(bg) ]
+    let colors_and_sections += [ '  local ' .section_name. '_sep_fg=' . s:fg(bg) ]
 
     let section_slices = a:preset[section_name]
-    call s:append_section( prompt, section_name, section_slices, section_count )
+    call s:append_section( a:prompt, section_name, section_slices, section_count )
   endfor
 
-  call s:append_closing_section( prompt )
+  call s:append_closing_section( a:prompt )
+  return colors_and_sections
+endfun
 
-  let symbols = promptline#get_symbols()
+fun! s:get_text_attribute_modifiers()
+  return [
+        \'  local bold="${wrap}1${end_wrap}"',
+        \'  local unbold="${wrap}22${end_wrap}"',
+        \'  local reset="${wrap}0${end_wrap}"',
+        \'  local reset_bg="${wrap}49${end_wrap}"']
+endfun
 
-  let text_modifiers += [ '  local bold="${wrap}1${end_wrap}"' ]
-  let text_modifiers += [ '  local unbold="${wrap}22${end_wrap}"' ]
-  let text_modifiers += [ '  local reset="${wrap}0${end_wrap}"' ]
-  let text_modifiers += [ '  local reset_bg="${wrap}49${end_wrap}"' ]
-
-  let snapshot_lines = []
-  for function_body in values(prompt.functions)
-    let snapshot_lines += function_body
+fun! s:get_function_definitions(prompt)
+  let function_definitions = []
+  for function_body in values(a:prompt.functions)
+    let function_definitions += function_body
   endfor
-  let snapshot_lines += [
-        \'',
-        \'function __promptline {',
-        \'  local last_exit_code="$?"',
-        \'  local space=" "',
+  return function_definitions
+endfun
+
+fun! s:get_symbol_definitions()
+  let use_powerline_symbols = get(g:, 'promptline_powerline_symbols', 1)
+  let separators = use_powerline_symbols ? s:powerline_symbols : s:simple_symbols
+  let symbols = extend(separators, get(g:, 'promptline_symbols', {}))
+
+  return [
+        \'  local space="' . symbols.space . '"',
         \'  local sep="' . symbols.left . '"',
         \'  local alt_sep="' . symbols.left_alt . '"',
         \'  local dir_sep="' . symbols.dir_sep . '"',
         \'  local vcs_branch="' . symbols.vcs_branch . '"',
-        \'  local truncation="' . symbols.truncation . '"',
-        \'']
+        \'  local truncation="' . symbols.truncation . '"']
+endfun
 
-  let snapshot_lines += shell_colors
-  let snapshot_lines += text_modifiers
-  let snapshot_lines += [ '  PS1="' . join(prompt.sections, '') . '"' ]
-  let snapshot_lines += [ '}' ]
-
-  let snapshot_lines += [ '' ]
-  let snapshot_lines += [ 'if [[ -n ${ZSH_VERSION-} ]]; then' ]
-  let snapshot_lines += [ '  if [[ ! ${precmd_functions[(r)__promptline]} == __promptline ]]; then' ]
-  let snapshot_lines += [ '    precmd_functions+=(__promptline)' ]
-  let snapshot_lines += [ '  fi' ]
-  let snapshot_lines += [ 'else' ]
-  let snapshot_lines += [ '  PROMPT_COMMAND=__promptline' ]
-  let snapshot_lines += [ 'fi' ]
-
-
-  if writefile(snapshot_lines, a:file) != 0
-    throw "promptline: Failed writing file " . a:file
-  endif
+fun! s:get_prompt_installation()
+  return [
+      \'',
+      \'if [[ -n ${ZSH_VERSION-} ]]; then',
+      \'  if [[ ! ${precmd_functions[(r)__promptline]} == __promptline ]]; then',
+      \'    precmd_functions+=(__promptline)',
+      \'  fi',
+      \'else',
+      \'  PROMPT_COMMAND=__promptline',
+      \'fi']
 endfun
 
 fun! s:get_ordered_section_names(preset)
