@@ -6,14 +6,17 @@ let s:FG = 0
 let s:BG = 1
 let s:SHELL_FG = 38
 let s:SHELL_BG = 48
-let s:DEFAULT_SECTION_ORDER = [ 'a', 'b', 'c', 'warn' ]
+let s:DEFAULT_SECTION_ORDER = [ 'a', 'b', 'c', 'x', 'y', 'z', 'warn' ]
+let s:DEFAULT_RIGHT_SECTIONS = [ 'warn', 'x', 'y', 'z' ]
 
 let s:default_theme = 'powerlineclone'
 let s:default_preset = 'powerlineclone'
 
 let s:powerline_symbols = {
     \ 'left'       : '',
+    \ 'right'      : '',
     \ 'left_alt'   : '',
+    \ 'right_alt'  : '',
     \ 'dir_sep'    : '  ',
     \ 'truncation' : '⋯',
     \ 'vcs_branch' : ' ',
@@ -21,7 +24,9 @@ let s:powerline_symbols = {
 
 let s:simple_symbols = {
     \ 'left'       : '',
+    \ 'right'      : '',
     \ 'left_alt'   : '|',
+    \ 'right_alt'  : '|',
     \ 'dir_sep'    : ' / ',
     \ 'truncation' : '...',
     \ 'vcs_branch' : '',
@@ -124,7 +129,7 @@ endfun
 fun! s:get_color_variables( theme, preset )
   let color_variables = []
 
-  for section_name in sort(keys(a:preset))
+  for section_name in s:get_ordered_section_names(a:preset)
     if !has_key(a:theme, section_name)
       throw "promptline: theme doesn't define colors for '". section_name . "' section"
     endif
@@ -137,7 +142,7 @@ fun! s:get_color_variables( theme, preset )
   return color_variables
 endfun
 
-fun! s:append_sections_to_prompt( prompt, preset )
+fun! s:append_sections_to_prompt( prompt, preset ) abort
   let section_count = 0
 
   let ordered_sections = s:get_ordered_section_names(a:preset)
@@ -175,7 +180,9 @@ fun! s:get_symbol_definitions()
   return [
         \'  local space="' . symbols.space . '"',
         \'  local sep="' . symbols.left . '"',
+        \'  local rsep="' . symbols.right . '"',
         \'  local alt_sep="' . symbols.left_alt . '"',
+        \'  local alt_rsep="' . symbols.right_alt . '"',
         \'  local dir_sep="' . symbols.dir_sep . '"',
         \'  local vcs_branch="' . symbols.vcs_branch . '"',
         \'  local truncation="' . symbols.truncation . '"']
@@ -199,11 +206,11 @@ fun! s:get_ordered_section_names(preset)
   return filter(copy(order), 'has_key(a:preset, v:val)')
 endfun
 
-fun! s:is_possibly_empty_section(section_slices, section_order)
+fun! s:is_possibly_empty_section(section_slices, is_first_section)
   let is_possibly_empty = 0
-  if len(a:section_slices) == 1
+  if len(a:section_slices) == 1 && !a:is_first_section
     let slice = a:section_slices[0]
-    if type(slice) == type({}) && get(slice, 'can_be_empty') && a:section_order != 1
+    if type(slice) == type({}) && get(slice, 'can_be_empty')
       let is_possibly_empty = 1
     endif
   endif
@@ -211,26 +218,58 @@ fun! s:is_possibly_empty_section(section_slices, section_order)
   return is_possibly_empty
 endfun
 
-fun! s:append_section( prompt, section_name, section_slices, section_order ) abort
-
-  let leading_separator = a:section_order > 1 ? '${'. a:section_name .'_bg}${sep}' : ''
-  let section_prefix =
+fun! s:get_section_prefixes_and_suffixes(section_name, is_first_section)
+  let leading_separator = a:is_first_section ? '' : '${'. a:section_name .'_bg}${sep}'
+  let left_section_prefix =
         \ '"' .
         \ leading_separator .
         \ '${'. a:section_name .'_fg}' .
         \ '${'. a:section_name .'_bg}' .
         \ '${space}' .
         \ '"'
-  let section_suffix = '"$space${' . a:section_name . '_sep_fg}"'
+  let left_section_suffix = '"$space${' . a:section_name . '_sep_fg}"'
 
-  if s:is_possibly_empty_section( a:section_slices, a:section_order )
-    let [ section_content, used_functions ] = s:append_possibly_empty_section( a:section_slices, section_prefix, section_suffix  )
-  else
-    let [ section_content, used_functions ] = s:append_simple_section( a:section_slices, section_prefix, section_suffix  )
-  endif
+  let right_section_prefix =
+        \ '"' .
+        \ '${'. a:section_name .'_sep_fg}' .
+        \ '${rsep}' .
+        \ '${'. a:section_name .'_fg}' .
+        \ '${'. a:section_name .'_bg}' .
+        \ '${space}' .
+        \ '"'
+  let right_section_suffix = '"$space${' . a:section_name . '_sep_fg}"'
 
+  return [ left_section_prefix, left_section_suffix, right_section_prefix, right_section_suffix ]
+endfun
+
+fun! s:is_right_section(section_name)
+  return index(s:DEFAULT_RIGHT_SECTIONS, a:section_name) > -1
+endfun
+
+fun! s:append_section(prompt, section_name, section_slices, section_order) abort
+  let is_first_section = a:section_order == 1
+  let [ left_section_prefix, left_section_suffix, right_section_prefix, right_section_suffix ] = s:get_section_prefixes_and_suffixes(a:section_name, is_first_section)
+
+  let [ section_content, used_functions ] = s:get_section_content_and_used_functions( a:section_slices, left_section_prefix, left_section_suffix, is_first_section )
   let a:prompt.sections += [ section_content ]
   call extend(a:prompt.functions, used_functions)
+
+  if s:is_right_section(a:section_name)
+    let [ right_section_content, used_functions ] = s:get_section_content_and_used_functions(a:section_slices, right_section_prefix, right_section_suffix, is_first_section)
+    let a:prompt.right_sections += [ right_section_content ]
+    call extend(a:prompt.functions, used_functions)
+  else
+    let a:prompt.left_sections += [ section_content ]
+  endif
+endfun
+
+fun! s:get_section_content_and_used_functions(section_slices, section_prefix, section_suffix, is_first_section)
+  let [ section_content, used_functions ] =
+        \   s:is_possibly_empty_section( a:section_slices, a:is_first_section )
+        \ ? s:append_possibly_empty_section( a:section_slices, a:section_prefix, a:section_suffix  )
+        \ : s:append_simple_section( a:section_slices, a:section_prefix, a:section_suffix  )
+
+  return [section_content, used_functions]
 endfun
 
 fun! s:append_possibly_empty_section( section_slices, section_prefix, section_suffix  ) abort
@@ -273,5 +312,10 @@ fun! s:append_closing_section( prompt ) abort
         \ '$space'
 
   let a:prompt.sections += [ closing_section ]
+  let a:prompt.left_sections += [ closing_section ]
+
+  if len(a:prompt.right_sections) > 0
+    let a:prompt.right_sections += [ '${reset}' ]
+  endif
 endfun
 

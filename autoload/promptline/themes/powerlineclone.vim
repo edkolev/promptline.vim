@@ -1,6 +1,5 @@
 
 fun! promptline#themes#powerlineclone#get()
-  " XXX section x,y,z is a hack. Officially only a,b,c are supported at this time
   return {
         \'a'      : [220, 166],
         \'b'      : [231, 31],
