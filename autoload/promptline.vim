@@ -144,6 +144,7 @@ fun! s:append_sections_to_prompt( prompt, preset )
   for section_name in (ordered_sections)
     let section_count += 1
     let section_slices = a:preset[section_name]
+
     call s:append_section( a:prompt, section_name, section_slices, section_count )
   endfor
 
@@ -198,21 +199,21 @@ fun! s:get_ordered_section_names(preset)
   return filter(copy(order), 'has_key(a:preset, v:val)')
 endfun
 
-fun! s:append_section( prompt, section_name, section_slices, section_order ) abort
+fun! s:is_possibly_empty_section(section_slices, section_order)
+  let is_possibly_empty = 0
   if len(a:section_slices) == 1
     let slice = a:section_slices[0]
     if type(slice) == type({}) && get(slice, 'can_be_empty') && a:section_order != 1
-      return s:append_possibly_empty_section( a:prompt, a:section_name, a:section_slices, a:section_order )
+      let is_possibly_empty = 1
     endif
   endif
-  return s:append_simple_section( a:prompt, a:section_name, a:section_slices, a:section_order )
+
+  return is_possibly_empty
 endfun
 
-fun! s:append_possibly_empty_section( prompt, section_name, section_slices, section_order ) abort
-  let slice = a:section_slices[0]
+fun! s:append_section( prompt, section_name, section_slices, section_order ) abort
 
   let leading_separator = a:section_order > 1 ? '${'. a:section_name .'_bg}${sep}' : ''
-
   let section_prefix =
         \ '"' .
         \ leading_separator .
@@ -222,37 +223,46 @@ fun! s:append_possibly_empty_section( prompt, section_name, section_slices, sect
         \ '"'
   let section_suffix = '"$space${' . a:section_name . '_sep_fg}"'
 
-  let possibly_empty_section = '$(' . slice.function_name . ' ' . section_prefix . ' ' . section_suffix . ')'
-  let a:prompt.functions[slice.function_name] = slice.function_body
-  let a:prompt.sections += [ possibly_empty_section ]
+  if s:is_possibly_empty_section( a:section_slices, a:section_order )
+    let [ section_content, used_functions ] = s:append_possibly_empty_section( a:section_slices, section_prefix, section_suffix  )
+  else
+    let [ section_content, used_functions ] = s:append_simple_section( a:section_slices, section_prefix, section_suffix  )
+  endif
+
+  let a:prompt.sections += [ section_content ]
+  call extend(a:prompt.functions, used_functions)
 endfun
 
-fun! s:append_simple_section( prompt, section_name, section_slices, section_order ) abort
+fun! s:append_possibly_empty_section( section_slices, section_prefix, section_suffix  ) abort
+  let slice = a:section_slices[0]
+
+  let used_functions_in_section = {}
+  let section_content = '$(' . slice.function_name . ' ' . a:section_prefix . ' ' . a:section_suffix . ')'
+  let used_functions_in_section[slice.function_name] = slice.function_body
+
+  return [ section_content, used_functions_in_section ]
+endfun
+
+fun! s:append_simple_section( section_slices, section_prefix, section_suffix  ) abort
   let section_content = ''
-
-  let leading_separator = a:section_order > 1 ? '${'. a:section_name .'_bg}${sep}' : ''
-
-  let section_colors =
-        \ leading_separator .
-        \ '${'. a:section_name .'_fg}' .
-        \ '${'. a:section_name .'_bg}' .
-        \ '${space}'
-  let section_suffix = '$space${' . a:section_name . '_sep_fg}'
+  let used_functions_in_section = {}
 
   let processed_section_slices = []
+
   for slice in (a:section_slices)
     if type(slice) == type("")
       let processed_section_slices += [ slice ]
     elseif type(slice) == type({})
       let processed_section_slices += [ '$(' . slice.function_name . ')' ]
-      let a:prompt.functions[slice.function_name] = slice.function_body
+      let used_functions_in_section[slice.function_name] = slice.function_body
     endif
     unlet slice
   endfor
 
   let section_content = join( processed_section_slices, '${space}${alt_sep}${space}' )
+  let section_content = a:section_prefix . section_content . a:section_suffix
 
-  let a:prompt.sections += [ section_colors . section_content . section_suffix ]
+  return [ section_content, used_functions_in_section ]
 endfun
 
 fun! s:append_closing_section( prompt ) abort
