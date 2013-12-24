@@ -67,14 +67,19 @@ endfun
 fun! promptline#create_snapshot(file, theme, preset) abort
   let prompt = {
         \'functions': {},
+        \'left_sections': [],
+        \'right_sections': [],
         \'sections': []}
 
-  let shell_escape_codes       = s:get_shell_escape_codes()
-  let symbol_definitions       = s:get_symbol_definitions()
-  let text_attribute_modifiers = s:get_text_attribute_modifiers()
-  let colors_and_sections      = s:get_colors_and_sections(prompt, a:theme, a:preset)
-  let function_definitions     = s:get_function_definitions(prompt)
-  let prompt_installation      = s:get_prompt_installation()
+  call s:append_sections_to_prompt(prompt, a:preset)
+
+  let shell_escape_codes            = s:get_shell_escape_codes()
+  let symbol_definitions            = s:get_symbol_definitions()
+  let text_attribute_modifiers      = s:get_text_attribute_modifiers()
+  let color_variables               = s:get_color_variables(a:theme, a:preset)
+  let function_definitions          = s:get_function_definitions(prompt)
+  let prompt_variables_installation = s:get_prompt_variables_installation(prompt)
+  let prompt_installation           = s:get_prompt_installation()
 
   let snapshot_lines =
         \ function_definitions +
@@ -85,8 +90,8 @@ fun! promptline#create_snapshot(file, theme, preset) abort
         \ shell_escape_codes +
         \ symbol_definitions +
         \ text_attribute_modifiers +
-        \ colors_and_sections +
-        \ ['  PS1="' . join(prompt.sections, '') . '"' ] +
+        \ color_variables +
+        \ prompt_variables_installation +
         \ ['}' ] +
         \ prompt_installation
 
@@ -106,30 +111,43 @@ fun! s:get_shell_escape_codes()
         \'  local wrap="$noprint$esc" end_wrap="$end_esc$end_noprint"']
 endfun
 
-fun! s:get_colors_and_sections( prompt, theme, preset )
+fun! s:get_prompt_variables_installation(prompt)
+  return [
+        \'  if [[ -n ${ZSH_VERSION-} ]]; then',
+        \'    PROMPT="' . join(a:prompt.left_sections, '') . '"',
+        \'    RPROMPT="' . join(a:prompt.right_sections, '') . '"',
+        \'  else',
+        \'    PS1="' . join(a:prompt.sections, '') . '"',
+        \'  fi']
+endfun
+
+fun! s:get_color_variables( theme, preset )
+  let color_variables = []
+
+  for section_name in sort(keys(a:preset))
+    if !has_key(a:theme, section_name)
+      throw "promptline: theme doesn't define colors for '". section_name . "' section"
+    endif
+
+    let [fg, bg] = a:theme[section_name][s:FG : s:BG]
+    let color_variables += [ '  local ' .section_name. '_fg=' . s:fg(fg) ]
+    let color_variables += [ '  local ' .section_name. '_bg=' . s:bg(bg) ]
+    let color_variables += [ '  local ' .section_name. '_sep_fg=' . s:fg(bg) ]
+  endfor
+  return color_variables
+endfun
+
+fun! s:append_sections_to_prompt( prompt, preset )
   let section_count = 0
-  let colors_and_sections = []
 
   let ordered_sections = s:get_ordered_section_names(a:preset)
   for section_name in (ordered_sections)
-    if !has_key(a:theme, section_name)
-      echohl WarningMsg | echomsg "promptline: theme doesn't define colors for '". section_name . "' section. Skipping section" | echohl None
-      continue
-    endif
-
     let section_count += 1
-    let [fg, bg] = a:theme[section_name][s:FG : s:BG]
-
-    let colors_and_sections += [ '  local ' .section_name. '_fg=' . s:fg(fg) ]
-    let colors_and_sections += [ '  local ' .section_name. '_bg=' . s:bg(bg) ]
-    let colors_and_sections += [ '  local ' .section_name. '_sep_fg=' . s:fg(bg) ]
-
     let section_slices = a:preset[section_name]
     call s:append_section( a:prompt, section_name, section_slices, section_count )
   endfor
 
   call s:append_closing_section( a:prompt )
-  return colors_and_sections
 endfun
 
 fun! s:get_text_attribute_modifiers()
@@ -245,9 +263,5 @@ fun! s:append_closing_section( prompt ) abort
         \ '$space'
 
   let a:prompt.sections += [ closing_section ]
-endfun
-
-fun! s:process_slice(slice)
-
 endfun
 
