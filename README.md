@@ -160,8 +160,7 @@ let g:promptline_preset = {
         \'b'    : [ promptline#slices#cwd() ],
         \'c'    : [ promptline#slices#vcs_branch() ],
         \'warn' : [ promptline#slices#last_exit_code() ],
-        \'z' : [ promptline#slices#host() ],
-}
+        \'z'    : [ promptline#slices#host() ]}
 ```
 
 bash:
