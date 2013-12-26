@@ -26,3 +26,8 @@ fun! promptline#slices#jobs(...)
         \'function_body': promptline#slices#jobs#function_body()}
 endfun
 
+fun! promptline#slices#host(...)
+  " host is \h in bash, %m in zsh
+  return '$(if [[ -n ${ZSH_VERSION-} ]]; then print %m; else printf "%s" \\h; fi)'
+endfun
+
