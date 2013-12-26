@@ -4,10 +4,8 @@
 
 let s:FG = 0
 let s:BG = 1
-let s:SHELL_FG = 38
-let s:SHELL_BG = 48
-let s:DEFAULT_SECTION_ORDER = [ 'a', 'b', 'c', 'x', 'y', 'z', 'warn' ]
-let s:DEFAULT_RIGHT_SECTIONS = [ 'warn', 'x', 'y', 'z' ]
+let s:SHELL_FG_CODE = 38
+let s:SHELL_BG_CODE = 48
 
 let s:default_theme = 'powerlineclone'
 let s:default_preset = 'powerlineclone'
@@ -62,11 +60,11 @@ fun! s:validate_file(overwrite, file)
 endfun
 
 fun! s:bg(color)
-  return printf('"${wrap}%d;5;%d${end_wrap}"', s:SHELL_BG, a:color)
+  return printf('"${wrap}%d;5;%d${end_wrap}"', s:SHELL_BG_CODE, a:color)
 endfun
 
 fun! s:fg(color)
-  return printf('"${wrap}%d;5;%d${end_wrap}"', s:SHELL_FG, a:color)
+  return printf('"${wrap}%d;5;%d${end_wrap}"', s:SHELL_FG_CODE, a:color)
 endfun
 
 fun! promptline#create_snapshot(file, theme, preset) abort
@@ -129,7 +127,11 @@ endfun
 fun! s:get_color_variables( theme, preset )
   let color_variables = []
 
-  for section_name in s:get_ordered_section_names(a:preset)
+  for section_name in sort(keys(a:preset))
+    if section_name ==# 'options'
+      continue
+    endif
+
     if !has_key(a:theme, section_name)
       throw "promptline: theme doesn't define colors for '". section_name . "' section"
     endif
@@ -143,14 +145,31 @@ fun! s:get_color_variables( theme, preset )
 endfun
 
 fun! s:append_sections_to_prompt( prompt, preset ) abort
-  let section_count = 0
 
-  let ordered_sections = s:get_ordered_section_names(a:preset)
-  for section_name in (ordered_sections)
-    let section_count += 1
-    let section_slices = a:preset[section_name]
+  " left-only prompt, i.e. bash (PS1)
+  let [is_first_section, is_left_section] = [1, 1]
+  for section_name in a:preset.options.left_only_sections
+    let [ section, used_functions ] = s:make_section(section_name, a:preset[section_name], is_left_section, is_first_section)
+    let a:prompt.sections += [ section ]
+    call extend(a:prompt.functions, used_functions)
+    let is_first_section = 0
+  endfor
 
-    call s:append_section( a:prompt, section_name, section_slices, section_count )
+  " left section for zsh (PROMPT)
+  let [is_first_section, is_left_section] = [1, 1]
+  for section_name in a:preset.options.left_sections
+    let [ section, used_functions ] = s:make_section(section_name, a:preset[section_name], is_left_section, is_first_section)
+    let a:prompt.left_sections += [ section ]
+    call extend(a:prompt.functions, used_functions)
+    let is_first_section = 0
+  endfor
+
+  " right section for zsh (RPROMPT)
+  let [is_first_section, is_left_section] = [0, 0]
+  for section_name in a:preset.options.right_sections
+    let [ section, used_functions ] = s:make_section(section_name, a:preset[section_name], is_left_section, is_first_section)
+    let a:prompt.right_sections += [ section ]
+    call extend(a:prompt.functions, used_functions)
   endfor
 
   call s:append_closing_section( a:prompt )
@@ -218,49 +237,35 @@ fun! s:is_possibly_empty_section(section_slices, is_first_section)
   return is_possibly_empty
 endfun
 
-fun! s:get_section_prefixes_and_suffixes(section_name, is_first_section)
-  let leading_separator = a:is_first_section ? '' : '${'. a:section_name .'_bg}${sep}'
-  let left_section_prefix =
-        \ '"' .
-        \ leading_separator .
-        \ '${'. a:section_name .'_fg}' .
-        \ '${'. a:section_name .'_bg}' .
-        \ '${space}' .
-        \ '"'
-  let left_section_suffix = '"$space${' . a:section_name . '_sep_fg}"'
-
-  let right_section_prefix =
-        \ '"' .
-        \ '${'. a:section_name .'_sep_fg}' .
-        \ '${rsep}' .
-        \ '${'. a:section_name .'_fg}' .
-        \ '${'. a:section_name .'_bg}' .
-        \ '${space}' .
-        \ '"'
-  let right_section_suffix = '"$space${' . a:section_name . '_sep_fg}"'
-
-  return [ left_section_prefix, left_section_suffix, right_section_prefix, right_section_suffix ]
-endfun
-
-fun! s:is_right_section(section_name)
-  return index(s:DEFAULT_RIGHT_SECTIONS, a:section_name) > -1
-endfun
-
-fun! s:append_section(prompt, section_name, section_slices, section_order) abort
-  let is_first_section = a:section_order == 1
-  let [ left_section_prefix, left_section_suffix, right_section_prefix, right_section_suffix ] = s:get_section_prefixes_and_suffixes(a:section_name, is_first_section)
-
-  let [ section_content, used_functions ] = s:get_section_content_and_used_functions( a:section_slices, left_section_prefix, left_section_suffix, is_first_section )
-  let a:prompt.sections += [ section_content ]
-  call extend(a:prompt.functions, used_functions)
-
-  if s:is_right_section(a:section_name)
-    let [ right_section_content, used_functions ] = s:get_section_content_and_used_functions(a:section_slices, right_section_prefix, right_section_suffix, is_first_section)
-    let a:prompt.right_sections += [ right_section_content ]
-    call extend(a:prompt.functions, used_functions)
+fun! s:get_section_prefix_and_suffix(section_name, is_left_section, is_first_section)
+  if a:is_left_section
+    let leading_separator = a:is_first_section ? '' : '${'. a:section_name .'_bg}${sep}'
+    let section_prefix =
+          \ '"' .
+          \ leading_separator .
+          \ '${'. a:section_name .'_fg}' .
+          \ '${'. a:section_name .'_bg}' .
+          \ '${space}' .
+          \ '"'
+    let section_suffix = '"$space${' . a:section_name . '_sep_fg}"'
   else
-    let a:prompt.left_sections += [ section_content ]
+    let section_prefix =
+          \ '"' .
+          \ '${'. a:section_name .'_sep_fg}' .
+          \ '${rsep}' .
+          \ '${'. a:section_name .'_fg}' .
+          \ '${'. a:section_name .'_bg}' .
+          \ '${space}' .
+          \ '"'
+    let section_suffix = '"$space${' . a:section_name . '_sep_fg}"'
   endif
+  return [ section_prefix, section_suffix ]
+endfun
+
+fun! s:make_section(section_name, slices, is_left_section, is_first_section)
+  let [ section_prefix, section_suffix ] = s:get_section_prefix_and_suffix(a:section_name, a:is_left_section, a:is_first_section)
+  let [ section_content, used_functions ] = s:get_section_content_and_used_functions( a:slices, section_prefix, section_suffix, a:is_first_section )
+  return [ section_content, used_functions ]
 endfun
 
 fun! s:get_section_content_and_used_functions(section_slices, section_prefix, section_suffix, is_first_section)

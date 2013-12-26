@@ -2,14 +2,25 @@
 "
 " Copyright (c) 2013 Evgeni Kolev
 
+let s:DEFAULT_LEFT_ONLY_SECTIONS = [ 'a', 'b', 'c', 'x', 'y', 'z', 'warn' ]
+let s:DEFAULT_LEFT_SECTIONS      = [ 'a', 'b', 'c' ]
+let s:DEFAULT_RIGHT_SECTIONS     = [ 'warn', 'x', 'y', 'z' ]
+
 fun! promptline#presets#load_preset(preset) abort
   if type(a:preset) == type("")
-    return promptline#presets#load_stock_preset(a:preset)
+    let preset = promptline#presets#load_stock_preset(a:preset)
   elseif type(a:preset) == type({})
-    return deepcopy(a:preset)
+    let preset = deepcopy(a:preset)
+  else
+    throw "promptline: invalid preset type of g:promptline_preset"
   endif
 
-  throw "promptline: invalid preset type of g:promptline_preset"
+  let preset.options = extend(get(preset, 'options', {}), {
+        \'left_sections': filter(copy(s:DEFAULT_LEFT_SECTIONS), 'has_key(preset, v:val)'),
+        \'right_sections': filter(copy(s:DEFAULT_RIGHT_SECTIONS), 'has_key(preset, v:val)'),
+        \'left_only_sections': filter(copy(s:DEFAULT_LEFT_ONLY_SECTIONS), 'has_key(preset, v:val)')}, 'keep')
+
+  return preset
 endfun
 
 fun! promptline#presets#load_stock_preset(preset_name) abort

@@ -4,5 +4,7 @@ fun! promptline#presets#clear#get()
         \'b' : [ '$USER' ],
         \'a' : [ promptline#slices#vcs_branch() ],
         \'c' : [ promptline#slices#cwd() ],
-        \'order' : [ 'b', 'a', 'c' ]}
+        \'options': {
+          \'left_sections' : [ 'b', 'a', 'c' ],
+          \'left_only_sections' : [ 'b', 'a', 'c' ]}}
 endfun
