@@ -2,7 +2,13 @@
 
 Simple shell prompt generator with support for powerline symbols and airline integration
 
+> bash
+
 ![promptline_head](https://f.cloud.github.com/assets/1532071/1797552/21be199a-6aef-11e3-8397-67754f12998d.png)
+
+> zsh
+
+![promptline_head2](https://f.cloud.github.com/assets/1532071/1811043/4419f3ce-6e41-11e3-89cf-f495325ab1a2.png)
 
 ## Features
 
@@ -100,7 +106,7 @@ let g:promptline_preset = {
       \'c'    : [ '\w' ]}
 ```
 
-TODO screenshot
+![screen shot 2013-12-26 at 4 58 15 pm](https://f.cloud.github.com/assets/1532071/1811021/c71e2ac6-6e3f-11e3-9498-08c1e70d2835.png)
 
 bash will replace `\h \u \w`. zsh's syntax for replacements is a bit different:
 
@@ -124,7 +130,7 @@ let g:promptline_preset = {
       \'c'    : [ '\w' ]}
 ```
 
-TODO screenshot
+![screen shot 2013-12-26 at 4 59 42 pm](https://f.cloud.github.com/assets/1532071/1811006/02c1aeb4-6e3f-11e3-8a65-4b370c023362.png)
 
 Any command can be used in the prompt with `$(command)`. Also, order of the sections in `g:promptline_preset` can be configured with `left_sections, right_sections, left_only_sections`. `left_sections` and `right_sections` will be used to order the sections in zsh (zsh supports left and right prompt via PROMPT and RPROMPT), `left_only_sections` will be used for bash (which doesn't support right prompt).
 ```
@@ -158,8 +164,13 @@ let g:promptline_preset = {
 }
 ```
 
-TODO screenshot
+bash:
 
+![screen shot 2013-12-26 at 5 01 54 pm](https://f.cloud.github.com/assets/1532071/1811007/02c934b8-6e3f-11e3-986f-2611024f6e1a.png)
+
+zsh:
+
+![screen shot 2013-12-26 at 5 02 58 pm](https://f.cloud.github.com/assets/1532071/1811023/d084a2e8-6e3f-11e3-86de-dd9a856d591c.png)
 
 ### Symbols
 
