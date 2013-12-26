@@ -74,9 +74,25 @@ let g:promptline_theme = 'jelly'
 
 ## Customization
 
+### TL;DR
+```
+" to disable powerline symbols
+" `let g:promptline_powerline_symbols = 0`
+
+" starting point for a personalized prompt
+" sections (a, b, c, x, y, z, warn) are optional
+let g:promptline_preset = {
+        \'a' : [ promptline#slices#host() ],
+        \'b' : [ '$USER'],
+        \'c' : [ promptline#slices#cwd() ],
+        \'y' : [ promptline#slices#vcs_branch() ],
+        \'z' : [ '$(uptime)' ],
+        \'warn' : [ promptline#slices#last_exit_code() ]}
+```
+
 ### Custom preset
 
-Contents of the prompt are configured with a simple hash, with optional keys `a, b, c, warn`
+Contents of the prompt are configured with a simple hash, with optional keys `a, b, c, x, y, z, warn`. In zsh, `x, y, z, warn` will be placed in the right prompt.
 ```
 let g:promptline_preset = {
       \'a'    : [ '\h' ],
@@ -110,13 +126,16 @@ let g:promptline_preset = {
 
 TODO screenshot
 
-bash allows any command in the prompt. Also, `g:promptline_preset` accepts an optional `order` key, which can be used to re-order the sections
+Any command can be used in the prompt with `$(command)`. Also, order of the sections in `g:promptline_preset` can be configured with `left_sections, right_sections, left_only_sections`. `left_sections` and `right_sections` will be used to order the sections in zsh (zsh supports left and right prompt via PROMPT and RPROMPT), `left_only_sections` will be used for bash (which doesn't support right prompt).
 ```
 let g:promptline_preset = {
       \'a'    : [ '$(hostname)' ],
       \'b'    : [ '$(whoami)' ],
       \'c'    : [ '$(pwd)' ],
-      \'order': [ 'c', 'b', 'c']}
+      \'options': {
+          \'left_sections' : [ 'b', 'a' ],
+          \'right_sections' : [ 'c' ],
+          \'left_only_sections' : [ 'b', 'a', 'c' ]}}
 ```
 
 promptline comes preloaded with a few commonly used commands:
@@ -125,15 +144,22 @@ promptline comes preloaded with a few commonly used commands:
 - job count (displayed if jobs != 0)
 - last exit code (displayed if exit code != 0)
 
+These commands (which are actually functions) reside in autoload/promptline/slices.vim
+
+Sections `x, y, z, warn` will be printed on the right by default if the shell supports it.
+
 ```
 let g:promptline_preset = {
-        \'a'    : [ '\h', '\u' ],
+        \'a'    : [ '$USER' ],
         \'b'    : [ promptline#slices#cwd() ],
         \'c'    : [ promptline#slices#vcs_branch() ],
-        \'warn' : [ promptline#slices#last_exit_code() ]}
+        \'warn' : [ promptline#slices#last_exit_code() ],
+        \'z' : [ promptline#slices#host() ],
+}
 ```
 
 TODO screenshot
+
 
 ### Symbols
 
