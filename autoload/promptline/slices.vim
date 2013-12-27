@@ -32,3 +32,10 @@ fun! promptline#slices#host(...)
   return '$(if [[ -n ${ZSH_VERSION-} ]]; then print %m; else printf "%s" \\h; fi)'
 endfun
 
+fun! promptline#slices#battery(...)
+  return {
+        \'function_name': '__promptline_battery',
+        \'can_be_empty': 1,
+        \'function_body': promptline#slices#battery#function_body()}
+endfun
+
