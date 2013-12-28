@@ -6,10 +6,11 @@ fun! promptline#slices#cwd(...)
 endfun
 
 fun! promptline#slices#vcs_branch(...)
+  let options = get(a:, 1, {})
   return {
         \'function_name': '__promptline_vcs_branch',
         \'can_be_empty': 1,
-        \'function_body': promptline#slices#vcs_branch#function_body()}
+        \'function_body': promptline#slices#vcs_branch#function_body(options)}
 endfun
 
 fun! promptline#slices#last_exit_code(...)
