@@ -4,6 +4,9 @@
 fun! promptline#slices#battery#function_body()
   return [
         \'function __promptline_battery {',
+        \'  local percent_sign',
+        \'  [[ -n ${ZSH_VERSION-} ]] && percent_sign="%%" || percent_sign="%"',
+        \'',
         \'  # osx',
         \'  if hash ioreg 2>/dev/null; then',
         \'    local ioreg_output',
@@ -15,7 +18,7 @@ fun! promptline#slices#battery#function_body()
         \'      current_capacity=${current_capacity%%\ \"*}',
         \'      current_capacity=$(($current_capacity * 100))',
         \'',
-        \'      printf "%s%s%%%s" "$1" $(($current_capacity / $battery_capacity)) "$2"',
+        \'      printf "%s" "${1}$(($current_capacity / $battery_capacity))${percent_sign}${2}"',
         \'      return',
         \'    fi',
         \'  fi',
@@ -27,7 +30,7 @@ fun! promptline#slices#battery#function_body()
         \'      current_capacity=$( <"$possible_battery_dir/energy_now" )',
         \'      battery_capacity=$( <"$possible_battery_dir/energy_full" )',
         \'      current_capacity=$(($current_capacity * 100))',
-        \'      printf "%s%s%%%s" "$1" $(($current_capacity / $battery_capacity)) "$2"',
+        \'      printf "%s" "${1}$(($current_capacity / $battery_capacity))${percent_sign}${2}"',
         \'    fi',
         \'  done',
         \'}']
