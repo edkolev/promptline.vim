@@ -157,8 +157,6 @@ endfun
 
 fun! s:get_text_attribute_modifiers()
   return [
-        \'  local bold="${wrap}1${end_wrap}"',
-        \'  local unbold="${wrap}22${end_wrap}"',
         \'  local reset="${wrap}0${end_wrap}"',
         \'  local reset_bg="${wrap}49${end_wrap}"']
 endfun
