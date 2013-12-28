@@ -1,10 +1,14 @@
 fun! promptline#slices#cwd#function_body( options )
   let dir_limit = get(a:options, 'dir_limit', 3)
+  let dir_sep = promptline#symbols#get().dir_sep
+  let truncation = promptline#symbols#get().truncation
   let lines = [
         \'function __promptline_cwd {',
         \'  local cwd="${PWD/#$HOME/~}"',
         \'  local dir_limit=3',
         \'  local parts',
+        \'  local dir_sep="' . dir_sep . '"',
+        \'  local truncation="' . truncation . '"',
         \'',
         \'  # get first char of the path, i.e. tilda or slash',
         \'  if [[ -n ${ZSH_VERSION-} ]]; then',

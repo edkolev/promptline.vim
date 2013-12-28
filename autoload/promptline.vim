@@ -10,26 +10,6 @@ let s:SHELL_BG_CODE = 48
 let s:default_theme = 'powerlineclone'
 let s:default_preset = 'powerlineclone'
 
-let s:powerline_symbols = {
-    \ 'left'       : '',
-    \ 'right'      : '',
-    \ 'left_alt'   : '',
-    \ 'right_alt'  : '',
-    \ 'dir_sep'    : '  ',
-    \ 'truncation' : '⋯',
-    \ 'vcs_branch' : ' ',
-    \ 'space'      : ' '}
-
-let s:simple_symbols = {
-    \ 'left'       : '',
-    \ 'right'      : '',
-    \ 'left_alt'   : '|',
-    \ 'right_alt'  : '|',
-    \ 'dir_sep'    : ' / ',
-    \ 'truncation' : '...',
-    \ 'vcs_branch' : '',
-    \ 'space'      : ' '}
-
 fun! promptline#snapshot(overwrite, file, ...) abort
   let input_theme = get(a:, 1, get(g:, 'promptline_theme', s:default_theme))
   let input_preset = get(a:, 2, get(g:, 'promptline_preset', s:default_preset))
@@ -192,19 +172,14 @@ fun! s:get_function_definitions(prompt)
 endfun
 
 fun! s:get_symbol_definitions()
-  let use_powerline_symbols = get(g:, 'promptline_powerline_symbols', 1)
-  let separators = use_powerline_symbols ? s:powerline_symbols : s:simple_symbols
-  let symbols = extend(separators, get(g:, 'promptline_symbols', {}))
+  let symbols = promptline#symbols#get()
 
   return [
         \'  local space="' . symbols.space . '"',
         \'  local sep="' . symbols.left . '"',
         \'  local rsep="' . symbols.right . '"',
         \'  local alt_sep="' . symbols.left_alt . '"',
-        \'  local alt_rsep="' . symbols.right_alt . '"',
-        \'  local dir_sep="' . symbols.dir_sep . '"',
-        \'  local vcs_branch="' . symbols.vcs_branch . '"',
-        \'  local truncation="' . symbols.truncation . '"']
+        \'  local alt_rsep="' . symbols.right_alt . '"']
 endfun
 
 fun! s:get_prompt_installation()

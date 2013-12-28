@@ -1,4 +1,5 @@
 fun! promptline#slices#vcs_branch#function_body(...)
+  let branch_symbol = promptline#symbols#get().vcs_branch
   let lines = [
         \'',
         \'function __promptline_vcs_branch {',
@@ -8,7 +9,8 @@ fun! promptline#slices#vcs_branch#function_body(...)
         \'  [[ -n $branch ]] || return 1;',
         \'  branch=${branch##*/}',
         \'',
-        \'  printf "%s" "${1}${vcs_branch}${branch:-unknown}${2}"',
+        \'  local branch_symbol="' . branch_symbol . '"',
+        \'  printf "%s" "${1}${branch_symbol}${branch:-unknown}${2}"',
         \'}',]
   return lines
 endfun
