@@ -65,8 +65,10 @@ fun! promptline#create_snapshot(file, theme, preset) abort
   let prompt_installation           = s:get_prompt_installation()
 
   let snapshot_lines =
+        \ [ '#'] +
+        \ [ '# This shell prompt config file was created by promptline.vim'] +
+        \ [ '#'] +
         \ function_definitions +
-        \ [''] +
         \ ['function __promptline {'] +
         \ ['  local last_exit_code="$?"'] +
         \ [''] +
