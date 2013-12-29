@@ -43,19 +43,23 @@ fun! s:get_section_prefix_and_suffix(section_name, is_left_section, is_first_sec
   return [ section_prefix, section_middle, section_suffix ]
 endfun
 
+let s:c = 0
 fun! s:append_possibly_empty_section( section_slices, section_prefix, section_middle, section_suffix  ) abort
   let used_functions_in_section = {}
   let section_content = ''
 
-  if len(a:section_slices) == 1
-    let section_content = '$(' . slice.function_name . ' ' . a:section_prefix . ' ' . a:section_suffix . ')'
-    let used_functions_in_section[slice.function_name] = slice.function_body
-    return [ section_content, used_functions_in_section ]
-  endif
+  " if len(a:section_slices) == 1
+  "   let slice = a:section_slices[0]
+  "   let section_content = '$(' . slice.function_name . ' ' . a:section_prefix . ' ' . a:section_suffix . ')'
+  "   let used_functions_in_section[slice.function_name] = slice.function_body
+  "   return [ section_content, used_functions_in_section ]
+  " endif
 
-  let section_content = '$(empty_sections)'
+  let func_name = 'empty_sections_' . s:c
+  let s:c += 1
+  let section_content = '$(' . func_name . ')'
   let func_body = [
-        \'function empty_sections {',
+        \'function ' . func_name .' {',
         \'  local P=' . a:section_prefix,
         \'  local S=' . a:section_suffix,
         \'  local J=' . a:section_middle,
@@ -64,15 +68,21 @@ fun! s:append_possibly_empty_section( section_slices, section_prefix, section_mi
         \'']
 
   for slice in a:section_slices
-    let func_body += [ '  ' . slice.function_name . ' "$P" "$S" && P="$J"' ]
-
-
-    let used_functions_in_section[slice.function_name] = slice.function_body
+    if type(slice) == type({}) && get(slice, 'can_be_empty')
+      let func_body += [ '  ' . slice.function_name . ' "$P" "$S" && P="$J"' ]
+      let used_functions_in_section[slice.function_name] = slice.function_body
+    elseif type(slice) == type({})
+      let func_body += [ '  printf "%s" "$P"; ' . slice.function_name . '; printf "%s" "$S"; P="$J"' ]
+      let used_functions_in_section[slice.function_name] = slice.function_body
+    else
+      let func_body += [ '  printf "%s%s%s" "$P"  "' . slice . '" "$S" && P="$J"' ]
+    endif
+    unlet slice
   endfor
 
   let func_body += ['', '}', '']
 
-  let used_functions_in_section.empty_sections = func_body
+  let used_functions_in_section[func_name] = func_body
   return [ section_content, used_functions_in_section ]
 endfun
 
@@ -100,13 +110,18 @@ fun! s:append_simple_section( section_slices, section_prefix, section_suffix  ) 
 endfun
 
 fun! s:is_possibly_empty_section(section_slices, is_first_section)
+  return 1
+  let ret = 0
   let possibly_empty_slices = 0
   for slice in a:section_slices
     if type(slice) == type({}) && get(slice, 'can_be_empty')
-      let possibly_empty_slices += 1
+      " let possibly_empty_slices += 1
+      let ret = 1
     endif
+    unlet slice
   endfor
 
-  return len(a:section_slices) == possibly_empty_slices
+  return ret
+  " return len(a:section_slices) == possibly_empty_slices
 endfun
 
