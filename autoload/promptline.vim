@@ -127,34 +127,19 @@ fun! s:get_color_variables( theme, preset )
 endfun
 
 fun! s:append_sections_to_prompt( prompt, preset ) abort
+  " TODO check if func_body is not empty
+  let a:prompt.functions['__promptline_ps1'] = promptline#sections#make_ps1( '__promptline_ps1', a:preset )
+  let a:prompt.functions['__promptline_left_prompt'] = promptline#sections#make_prompt( '__promptline_left_prompt', a:preset )
+  let a:prompt.functions['__promptline_right_prompt'] = promptline#sections#make_right_prompt( '__promptline_right_prompt', a:preset )
 
-  " left-only prompt, i.e. bash (PS1)
-  let [is_first_section, is_left_section] = [1, 1]
-  for section_name in a:preset.options.left_only_sections
-    let [ section, used_functions ] = promptline#sections#make_section(section_name, a:preset[section_name], is_left_section, is_first_section)
-    let a:prompt.sections += [ section ]
-    call extend(a:prompt.functions, used_functions)
-    let is_first_section = 0
-  endfor
+  let used_functions = promptline#sections#used_functions( a:preset )
+  call extend(a:prompt.functions, used_functions)
 
-  " " left section for zsh (PROMPT)
-  " let [is_first_section, is_left_section] = [1, 1]
-  " for section_name in a:preset.options.left_sections
-  "   let [ section, used_functions ] = s:make_section(section_name, a:preset[section_name], is_left_section, is_first_section)
-  "   let a:prompt.left_sections += [ section ]
-  "   call extend(a:prompt.functions, used_functions)
-  "   let is_first_section = 0
-  " endfor
+  " TODO check if func_body is not empty
+  let a:prompt.sections = [ '$(__promptline_ps1)' ]
+  let a:prompt.left_sections = [ '$(__promptline_left_prompt)' ]
+  let a:prompt.right_sections = [ '$(__promptline_right_prompt)' ]
 
-  " " right section for zsh (RPROMPT)
-  " let [is_first_section, is_left_section] = [0, 0]
-  " for section_name in a:preset.options.right_sections
-  "   let [ section, used_functions ] = s:make_section(section_name, a:preset[section_name], is_left_section, is_first_section)
-  "   let a:prompt.right_sections += [ section ]
-  "   call extend(a:prompt.functions, used_functions)
-  " endfor
-
-  call s:append_closing_section( a:prompt )
 endfun
 
 fun! s:get_text_attribute_modifiers()
