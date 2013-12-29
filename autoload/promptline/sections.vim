@@ -1,33 +1,32 @@
 
-" TODO rename section -> slice
-fun! s:get_section_prefix_and_suffix(section_name, is_left_section)
+fun! s:get_slice_modifiers(section_name, is_left_section)
   if a:is_left_section
-    let section_prefix = '"${'. a:section_name .'_bg}${sep}${'. a:section_name .'_fg}${'. a:section_name .'_bg}${space}"'
-    let section_empty_prefix = '"${'. a:section_name .'_fg}${'. a:section_name .'_bg}${space}"'
-    let section_suffix = '"$space${' . a:section_name . '_sep_fg}"'
+    let prefix = '"${'. a:section_name .'_bg}${sep}${'. a:section_name .'_fg}${'. a:section_name .'_bg}${space}"'
+    let empty_prefix = '"${'. a:section_name .'_fg}${'. a:section_name .'_bg}${space}"'
+    let suffix = '"$space${' . a:section_name . '_sep_fg}"'
 
   else
-    let section_prefix = '"${'. a:section_name .'_sep_fg}${rsep}${'. a:section_name .'_fg}${'. a:section_name .'_bg}${space}"'
-    let section_empty_prefix = '""'
-    let section_suffix = '"$space${' . a:section_name . '_sep_fg}"'
+    let prefix = '"${'. a:section_name .'_sep_fg}${rsep}${'. a:section_name .'_fg}${'. a:section_name .'_bg}${space}"'
+    let empty_prefix = '""'
+    let suffix = '"$space${' . a:section_name . '_sep_fg}"'
   endif
 
   let alt_sep = a:is_left_section ? '${alt_sep}' : '${alt_rsep}'
-  let section_middle = '"${' . a:section_name . '_fg}${' . a:section_name . '_bg}' .  alt_sep .  '${space}"'
+  let joiner = '"${' . a:section_name . '_fg}${' . a:section_name . '_bg}' .  alt_sep .  '${space}"'
 
-  return [ section_prefix, section_empty_prefix, section_middle, section_suffix ]
+  return [prefix, empty_prefix, joiner, suffix]
 endfun
 
 fun! promptline#sections#make_ps1( function_name, preset ) abort
-  return s:make( a:function_name,  a:preset, a:preset.options.left_only_sections, 1 )
+  return s:make_function( a:function_name,  a:preset, a:preset.options.left_only_sections, 1 )
 endfun
 
 fun! promptline#sections#make_prompt( function_name, preset ) abort
-  return s:make( a:function_name,  a:preset, a:preset.options.left_sections, 1 )
+  return s:make_function( a:function_name,  a:preset, a:preset.options.left_sections, 1 )
 endfun
 
 fun! promptline#sections#make_right_prompt( function_name, preset ) abort
-  return s:make( a:function_name,  a:preset, a:preset.options.right_sections, 0 )
+  return s:make_function( a:function_name,  a:preset, a:preset.options.right_sections, 0 )
 endfun
 
 fun! promptline#sections#used_functions( preset ) abort
@@ -44,8 +43,10 @@ fun! promptline#sections#used_functions( preset ) abort
   return used_functions
 endfun
 
-" TODO return nothing if all sections are empty
-fun! s:make( function_name, preset, section_names, is_left )
+fun! s:make_function( function_name, preset, section_names, is_left )
+  if len(a:section_names) == 0
+    return []
+  endif
 
   let section_local_variables = a:is_left ?
         \'  local slice_prefix slice_empty_prefix slice_joiner slice_suffix is_prompt_empty=1' :
@@ -57,11 +58,11 @@ fun! s:make( function_name, preset, section_names, is_left )
         \ section_local_variables]
 
   for section_name in a:section_names
-    let [ section_prefix, section_empty_prefix, section_middle, section_suffix ] = s:get_section_prefix_and_suffix(section_name, a:is_left)
+    let [ slice_prefix, slice_empty_prefix, slice_middle, slice_suffix ] = s:get_slice_modifiers(section_name, a:is_left)
     let func_body += [
           \'',
           \'  # section "' . section_name . '" header',
-          \'  slice_prefix=' . section_prefix  . ' slice_suffix=' . section_suffix . ' slice_joiner=' . section_middle . ' slice_empty_prefix=' . section_empty_prefix]
+          \'  slice_prefix=' . slice_prefix  . ' slice_suffix=' . slice_suffix . ' slice_joiner=' . slice_middle . ' slice_empty_prefix=' . slice_empty_prefix]
 
     " only left sections should check $is_prompt_empty
     if a:is_left
@@ -88,7 +89,6 @@ fun! s:make( function_name, preset, section_names, is_left )
         \'',
         \'  # close sections',
         \'  printf "%s" ' . section_closing,
-        \'}',
-        \'']
+        \'}']
   return func_body
 endfun
