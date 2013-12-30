@@ -40,3 +40,16 @@ fun! promptline#slices#battery(...)
         \'function_body': promptline#slices#battery#function_body(options)}
 endfun
 
+" internally used to wrap any string, like \w, \h, $(command) with the given colors / separators
+fun! promptline#slices#wrapper(...)
+  return {
+        \'function_name': '__promptline_wrapper',
+        \'function_body': [
+          \'function __promptline_wrapper {',
+          \'  # wrap the text in $3 with $1 and $2, only if $3 is not empty',
+          \'  # $1 and $2 should contain non-content-text, like color escape codes and separators',
+          \'',
+          \'  [[ -n "$3" ]] || return 1',
+          \'  printf "%s" "${1}${3}${2}"',
+          \'}']}
+endfun

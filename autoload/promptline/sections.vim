@@ -31,11 +31,15 @@ endfun
 
 fun! promptline#sections#used_functions( preset ) abort
   let used_functions = {}
+  let wrapper_slice = promptline#slices#wrapper()
+
   for section_name in keys( a:preset )
     if section_name ==# 'options'| continue | endif
     for slice in a:preset[section_name]
       if type(slice) == type({})
         let used_functions[slice.function_name] = slice.function_body
+      else
+        let used_functions[wrapper_slice.function_name] = wrapper_slice.function_body
       endif
       unlet slice
     endfor
@@ -47,6 +51,7 @@ fun! s:make_function( function_name, preset, section_names, is_left )
   if len(a:section_names) == 0
     return []
   endif
+  let wrapper_slice = promptline#slices#wrapper()
 
   let section_local_variables = a:is_left ?
         \'  local slice_prefix slice_empty_prefix slice_joiner slice_suffix is_prompt_empty=1' :
@@ -74,9 +79,10 @@ fun! s:make_function( function_name, preset, section_names, is_left )
       if type(slice) == type({}) && get(slice, 'can_be_empty')
         let slice_content =  '  ' . slice.function_name . ' "$slice_prefix" "$slice_suffix" && slice_prefix="$slice_joiner"' . slice_command_trailer
       elseif type(slice) == type({})
+        " TODO use __promptline_wrapper on all functions
         let slice_content = '  printf "%s" "$slice_prefix" && ' . slice.function_name . ' && printf "%s" "$slice_suffix" && slice_prefix="$slice_joiner"' . slice_command_trailer
       else
-        let slice_content = '  printf "%s%s%s" "$slice_prefix"  "' . slice . '" "$slice_suffix" && slice_prefix="$slice_joiner"' . slice_command_trailer
+        let slice_content =  '  ' . wrapper_slice.function_name . ' "$slice_prefix" "$slice_suffix" "' . slice . '" && slice_prefix="$slice_joiner"' . slice_command_trailer
       endif
 
       let func_body += [ slice_content ]
