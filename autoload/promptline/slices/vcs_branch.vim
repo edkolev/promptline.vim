@@ -59,11 +59,11 @@ fun! promptline#slices#vcs_branch#function_body(options)
         \'      fi',
         \'    fi',
         \'  fi',
-        \'',
-        \'  return 1']
+        \'']
   endif
 
   let lines += [
+        \'  return 1',
         \'}']
   return lines
 endfun

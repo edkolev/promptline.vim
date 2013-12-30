@@ -10,6 +10,7 @@ let s:simple_symbols = {
     \ 'dir_sep'        : ' / ',
     \ 'truncation' : '...',
     \ 'vcs_branch'     : '',
+    \ 'battery'        : '',
     \ 'space'          : ' '}
 
 let s:powerline_symbols = extend(copy(s:simple_symbols), {
