@@ -204,7 +204,7 @@ Example: include git short sha1 hash in the prompt. Desired output:
 ![screen shot 2013-12-30 at 3 33 55 pm](https://f.cloud.github.com/assets/1532071/1822221/15a4a2f0-7157-11e3-92be-67efd210da01.png)
 
 
-##### command which always has output
+##### simple one-liners
 
 Slices (a.k.a. segments) can be any custom command/function. To include the sha1 after the branch:
 ```
@@ -213,38 +213,35 @@ let g:promptline_preset = {
         \'c' : [ promptline#slices#vcs_branch(), '$(git rev-parse --short HEAD 2>/dev/null)']}
 ```
 
-Although this works fine in git repositories, it has a flaw: outside of repository it shows an empty section. promptline.vim blindly assumes that your command will have some output, so it surronds it with separators and color escape codes.
+As a result, the sha1 will be displayed next to the branch name. If the current dir is not a git repository, the section will be empty:
 
-![screen shot 2013-12-30 at 3 20 31 pm](https://f.cloud.github.com/assets/1532071/1822207/6f941134-7156-11e3-87e0-22d991d90cf0.png)
+![screen shot 2013-12-30 at 3 17 55 pm](https://f.cloud.github.com/assets/1532071/1822208/6f96ea12-7156-11e3-8418-dda03084b760.png)
 
-##### command which may have no output
+##### functions
 
-To address this issue, promtline needs to know that the command may have no output at all. This is achieved by specifying a hash, describing a shell function:
+If the desired output cannot be achieved with a one-liner, a shell function can be used. This is specified with a hash, containing the function name and body:
 
 ```
-let git_sha = {
-      \'can_be_empty': 1,
+let git_sha_slice = {
       \'function_name': 'git_sha',
       \'function_body': [
         \'function git_sha {',
         \'  local sha',
         \'  sha=$(git rev-parse --short HEAD 2>/dev/null) || return 1',
-        \'  printf "%s" "$1$sha$2"',
+        \'  printf "%s" "$sha"',
         \'}']}
 
 let g:promptline_preset = {
         \'a' : [ promptline#slices#cwd() ],
-        \'b' : [ promptline#slices#vcs_branch(), git_sha ]}
+        \'b' : [ promptline#slices#vcs_branch(), git_sha_slice ]}
 ```
 
-Three things to note here:
-* `function_name` is the name of the shell function. It's only used to make sure the function is not added more than once in the generated .sh file
-* `can_be_empty` indicates the function may return nothing
-* `function_body` is the shell function which will be placed in the generated .sh file. This function must:
-  * `return 1` if it's not going to output anything
-  * print it's output surrounded by the first `$1` and second `$2` arguments passed to it, like so `printf "%s" "$1$sha$2"`
+Two things to note here:
+* `function_name` (string) is the name of the shell function. It's only used to make sure the function is not added more than once in the generated .sh file
+* `function_body` (array) is the shell function which will be placed in the generated .sh file."
+```
 
-As a result, sha1 is displayed only inside git repositories:
+The result is the same.
 
 ![screen shot 2013-12-30 at 3 17 55 pm](https://f.cloud.github.com/assets/1532071/1822208/6f96ea12-7156-11e3-8418-dda03084b760.png)
 
