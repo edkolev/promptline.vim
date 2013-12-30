@@ -33,9 +33,10 @@ fun! promptline#slices#host(...)
 endfun
 
 fun! promptline#slices#battery(...)
+  let options = get(a:, 1, {})
   return {
         \'function_name': '__promptline_battery',
         \'can_be_empty': 1,
-        \'function_body': promptline#slices#battery#function_body()}
+        \'function_body': promptline#slices#battery#function_body(options)}
 endfun
 
