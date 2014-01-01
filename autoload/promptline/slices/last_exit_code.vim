@@ -5,7 +5,7 @@ fun! promptline#slices#last_exit_code#function_body(...)
         \'',
         \'  [[ $last_exit_code -gt 0 ]] || return 1;',
         \'',
-        \'  printf "%s" "${1}$last_exit_code${2}"',
+        \'  printf "%s" "$last_exit_code"',
         \'}',]
   return lines
 endfun

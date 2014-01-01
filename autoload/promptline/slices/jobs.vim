@@ -13,7 +13,7 @@ fun! promptline#slices#jobs#function_body(...)
         \'  done',
         \'',
         \'  [[ $job_count -gt 0 ]] || return 1;',
-        \'  printf "%s" "${1}$job_count${2}"',
+        \'  printf "%s" "$job_count"',
         \'}',]
   return lines
 endfun

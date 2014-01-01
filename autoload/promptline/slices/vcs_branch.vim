@@ -16,7 +16,7 @@ fun! promptline#slices#vcs_branch#function_body(options)
         \'  if hash git 2>/dev/null; then',
         \'    if branch=$( { git symbolic-ref --quiet HEAD || git rev-parse --short HEAD; } 2>/dev/null ); then',
         \'      branch=${branch##*/}',
-        \'      printf "%s" "${1}${branch_symbol}${branch:-unknown}${2}"',
+        \'      printf "%s" "${branch_symbol}${branch:-unknown}"',
         \'      return',
         \'    fi',
         \'  fi']
@@ -28,7 +28,7 @@ fun! promptline#slices#vcs_branch#function_body(options)
         \'  # mercurial',
         \'  if hash hg 2>/dev/null; then',
         \'    if branch=$(hg branch 2>/dev/null); then',
-        \'      printf "%s" "${1}${branch_symbol}${branch:-unknown}${2}"',
+        \'      printf "%s" "${branch_symbol}${branch:-unknown}"',
         \'      return',
         \'    fi',
         \'  fi']
@@ -54,7 +54,7 @@ fun! promptline#slices#vcs_branch#function_body(options)
         \'        branch=${branch#branches/}',
         \'        branch=${branch%%/*}',
         \'',
-        \'        printf "%s" "${1}${branch_symbol}${branch:-unknown}${2}"',
+        \'        printf "%s" "${branch_symbol}${branch:-unknown}"',
         \'        return',
         \'      fi',
         \'    fi',
