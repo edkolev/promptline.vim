@@ -86,7 +86,7 @@ let g:promptline_theme = 'jelly'
 " sections (a, b, c, x, y, z, warn) are optional
 let g:promptline_preset = {
         \'a' : [ promptline#slices#host() ],
-        \'b' : [ '$(whoami)'],
+        \'b' : [ promptline#slices#user() ],
         \'c' : [ promptline#slices#cwd() ],
         \'y' : [ promptline#slices#vcs_branch() ],
         \'warn' : [ promptline#slices#last_exit_code() ]}
@@ -97,9 +97,16 @@ let g:promptline_preset = {
 " promptline#slices#vcs_branch() - branch name only. by default only git branch is enabled. Use promptline#slices#vcs_branch({ 'hg': 1, 'svn': 1}) to enable check for svn and mercurial branches. Note that always checking if inside a branch slows down the prompt
 " promptline#slices#last_exit_code() - display exit code of last command if not zero
 " promptline#slices#jobs() - display number of shell jobs if more than zero
-" promptline#slices#host()
 " promptline#slices#battery() - display battery percentage (on OSX and linux) only if below 10%. Configure the threshold with promptline#slices#battery({ 'threshold': 25 })
-
+" promptline#slices#host()
+" promptline#slices#user()
+"
+" any command can be used in a slice, for example to print the output of whoami in section 'b':
+"       \'b' : [ '$(whoami)'],
+"
+" more than one slice can be placed in a section, e.g. print both host and user in section 'a':
+"       \'a': [ promptline#slices#host(), promptline#slices#user() ],
+"
 " to disable powerline symbols
 " `let g:promptline_powerline_symbols = 0`
 
