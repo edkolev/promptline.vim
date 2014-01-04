@@ -8,7 +8,7 @@ let s:simple_symbols = {
     \ 'left_alt'       : '|',
     \ 'right_alt'      : '|',
     \ 'dir_sep'        : ' / ',
-    \ 'truncation' : '...',
+    \ 'truncation'     : '...',
     \ 'vcs_branch'     : '',
     \ 'battery'        : '',
     \ 'space'          : ' '}
@@ -19,7 +19,7 @@ let s:powerline_symbols = extend(copy(s:simple_symbols), {
     \ 'left_alt'       : '',
     \ 'right_alt'      : '',
     \ 'dir_sep'        : '  ',
-    \ 'truncation' : '⋯',
+    \ 'truncation'     : '⋯',
     \ 'vcs_branch'     : ' '})
 
 fun! promptline#symbols#get()

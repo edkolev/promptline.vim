@@ -1,0 +1,135 @@
+*promptline.txt* shell prompt generator
+*promptline*
+
+    __                                      __   __ __                __    ~
+   |_ `.  .-----.----.-----.--------.-----.|  |_|  |__|.-----.-----. |_ `.  ~
+     \  \ |  _  |   _|  _  |        |  _  ||   _|  |  ||     |  -__|   \  \ ~
+    _/  / |   __|__| |_____|__|__|__|   __||____|__|__||__|__|_____|  _/  / ~
+   |__,'  |__|                      |__|                             |__,'  ~
+
+                      Generate a fast shell prompt ~
+                        with airline colors ~
+                        and powerline symbols ~
+
+Author:  Evgeni Kolev
+License: The MIT License (MIT)
+Repo:    http://github.com/edkolev/promptline.vim
+
+==============================================================================
+USAGE                                                     *promptline-usage*
+
+* Use this plugin's |promptline-commands| to create a shell file
+* Configure the shell (bash or zsh) to source the generated file on login.
+
+==============================================================================
+COMMANDS                                               *promptline-commands*
+
+
+:PromptlineSnapshot[!] [file]                          *:PromptlineSnapshot*
+  Create a snapshot shell file.
+  Will use the default theme if |g:promptline_theme| is not defined.
+  Will use the default preset if |g:promptline_preset| is not defined.
+  Will not overwrite the file unless [!] is given
+
+:PromptlineSnapshot[!] [file] [theme]
+  Create a snapshot shell file with the specified color theme.
+  Will use the defult preset if |g:promptline_preset| is not defined.
+  Will not overwrite the file unless [!] is given
+
+:PromptlineSnapshot[!] [file] [theme] [preset]
+  Create a snapshot shell file with the specified color theme and stock preset
+  Will not overwrite the file unless [!] is given
+
+==============================================================================
+CONFIGURATION                                     *promptline-configuration*
+
+* enable/disable usage of powerline symbols for separators (default on) >
+  let g:promptline_powerline_symbols = 0
+<
+
+* fine-tune simbols >
+  let g:promptline_symbols = {
+      \ 'left'           : '',
+      \ 'right'          : '',
+      \ 'left_alt'       : '>',
+      \ 'right_alt'      : '<',
+      \ 'dir_sep'        : ' / ',
+      \ 'truncation'     : '...',
+      \ 'vcs_branch'     : '',
+      \ 'battery'        : '',
+      \ 'space'          : ' '}
+
+<
+
+* promptline color theme                                *g:promptline_theme*
+  Specify which stock color theme |:PromptlineSnapshot| should use.
+  Themes reside in autoload/promptline/themes/* >
+
+  let g:promptline_theme = 'jelly'
+  let g:promptline_theme = 'powerlineclone'
+  let g:promptline_theme = 'airline'
+  let g:promptline_theme = 'airline_insert'
+<
+* promptline preset (layout)                           *g:promptline_preset*
+  |g:promptline_preset| can hold a string, in which case a stock preset will
+  be used by |:PromptlineSnapshot| >
+
+  let g:promptline_preset = 'clear'
+  let g:promptline_preset = 'full'
+  let g:promptline_preset = 'powerlineclone'
+<
+  Alternatively, |g:promptline_preset| can hold a |Dictionary|. This can be
+  used to customize the prompt. The dictionary can have (optional) keys 'a, b,
+  c, x, y, z, warn'. In zsh, 'x, y, z, warn' will be placed in the right
+  prompt. Each value associated with these keys must be an array. Very basic
+  example, showing how to include the hostname, user and current working dir in
+  the prompt: >
+
+  let g:promptline_preset = {
+      \'a'    : [ '$(hostname)' ],
+      \'b'    : [ '$USER' ],
+      \'c'    : [ '$PWD' ]}
+<
+  'a', 'b', 'c' are referred to as 'sections', the elements in the array
+  associated with them are referred to as 'slices'. Each section can hold
+  multiple slices. A slice may be empty (e.g. git branch is displayed in git
+  repositories only). If all slices in a section are empty, the section is not
+  displayed at all.
+
+  |promptline| comes with commonly used slices which can be used in
+  |g:promptline_preset|.  Refer to |promptline-slices| for details about
+  preloaded sections.  In this example, all slices in section 'c' and 'warn'
+  may be empty: >
+
+  let g:promptline_preset = {
+        \'a' : [ promptline#slices#user() ],
+        \'b' : [ promptline#slices#cwd() ],
+        \'c' : [ promptline#slices#vcs_branch(), promptline#slices#jobs() ],
+        \'warn' : [ promptline#slices#last_exit_code() ]}
+<
+  The order of the sections in |g:promptline_preset| can be configured with
+  'left_sections, right_sections, left_only_sections'. 'left_sections' and
+  'right_sections' will be used to order the sections in zsh (zsh supports left
+  and right prompt via PROMPT and RPROMPT), 'left_only_sections' will be used
+  for bash (which doesn't support right prompt). Example which sets section 'b'
+    before section 'a' >
+
+  let g:promptline_preset = {
+        \'a' : [ promptline#slices#user() ],
+        \'b' : [ promptline#slices#cwd() ],
+        \'c' : [ promptline#slices#vcs_branch(), promptline#slices#jobs() ],
+        \'warn' : [ promptline#slices#last_exit_code() ]}
+        \'options': {
+            \'left_sections' : [ 'b', 'a' ],
+            \'right_sections' : [ 'c' ],
+            \'left_only_sections' : [ 'b', 'a', 'c' ]}}
+<
+
+==============================================================================
+LICENSE                                                 *promptline-license*
+
+The MIT License (MIT)
+
+Copyright (c) 2014 Evgeni Kolev
+
+vim:tw=78:ts=8:ft=help:norl:
