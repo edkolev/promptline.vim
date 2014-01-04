@@ -21,6 +21,8 @@ Simple shell prompt generator with support for powerline symbols and airline int
 
 The plugin has been tested in bash and zsh
 
+More screenshots can be found in the [wiki](https://github.com/edkolev/promptline.vim/wiki/Screenshots)
+
 #### Quick Start with airline installed
 
 1. In vim `:PromptlineSnapshot ~/.shell_prompt.sh airline`
@@ -245,8 +247,7 @@ let g:promptline_preset = {
 
 Two things to note here:
 * `function_name` (string) is the name of the shell function. It's only used to make sure the function is not added more than once in the generated .sh file
-* `function_body` (array) is the shell function which will be placed in the generated .sh file."
-```
+* `function_body` (array) is the shell function which will be placed in the generated .sh file.
 
 The result is the same.
 
