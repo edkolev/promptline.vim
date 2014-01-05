@@ -20,14 +20,18 @@ fun! promptline#themes#load_airline_theme(...)
   endif
 
   let mode_palette = g:airline#themes#{g:airline_theme}#palette[mode]
+  return promptline#themes#create_theme_from_airline(mode_palette)
+endfun
+
+fun! promptline#themes#create_theme_from_airline(mode_palette)
   return {
-        \'a'    : mode_palette.airline_a[2:4],
-        \'b'    : mode_palette.airline_b[2:4],
-        \'c'    : mode_palette.airline_c[2:4],
-        \'x'    : mode_palette.airline_x[2:4],
-        \'y'    : mode_palette.airline_y[2:4],
-        \'z'    : mode_palette.airline_z[2:4],
-        \'warn' : mode_palette.airline_warning[2:4]}
+        \'a'    : a:mode_palette.airline_a[2:4],
+        \'b'    : a:mode_palette.airline_b[2:4],
+        \'c'    : a:mode_palette.airline_c[2:4],
+        \'x'    : a:mode_palette.airline_x[2:4],
+        \'y'    : a:mode_palette.airline_y[2:4],
+        \'z'    : a:mode_palette.airline_z[2:4],
+        \'warn' : a:mode_palette.airline_warning[2:4]}
 endfun
 
 fun! promptline#themes#load_stock_theme(theme_name) abort
