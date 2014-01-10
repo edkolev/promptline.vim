@@ -41,6 +41,10 @@ fun! promptline#slices#battery(...)
         \'function_body': promptline#slices#battery#function_body(options)}
 endfun
 
+fun! promptline#slices#python_virtualenv(...)
+  return '${VIRTUAL_ENV##*/}'
+endfun
+
 " internally used to wrap any string, like \w, \h, $(command) with the given colors / separators
 fun! promptline#slices#wrapper(...)
   return {
