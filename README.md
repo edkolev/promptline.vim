@@ -102,6 +102,7 @@ let g:promptline_preset = {
 " promptline#slices#battery() - display battery percentage (on OSX and linux) only if below 10%. Configure the threshold with promptline#slices#battery({ 'threshold': 25 })
 " promptline#slices#host()
 " promptline#slices#user()
+" promptline#slices#python_virtualenv() - display which virtual env is active (empty is none)
 "
 " any command can be used in a slice, for example to print the output of whoami in section 'b':
 "       \'b' : [ '$(whoami)'],
