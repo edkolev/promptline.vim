@@ -103,6 +103,7 @@ let g:promptline_preset = {
 " promptline#slices#host()
 " promptline#slices#user()
 " promptline#slices#python_virtualenv() - display which virtual env is active (empty is none)
+" promptline#slices#git_status() - count of commits ahead/behind upstream, count of modified/added/unmerged files, symbol for clean branch and symbol for existing untraced files
 "
 " any command can be used in a slice, for example to print the output of whoami in section 'b':
 "       \'b' : [ '$(whoami)'],
@@ -266,6 +267,7 @@ The plugin's files follow the standard layout for vim plugins.
 
 - Bailey Ling's [vim-airline][1]
 - Kim Silkebækken's [Powerline][2]
+- Olivier Verdier's [zsh-git-prompt][7] (git_status slice)
 
 ## Rationale
 
@@ -292,3 +294,4 @@ MIT License. Copyright (c) 2013-2014 Evgeni Kolev.
 [4]: https://github.com/tpope/vim-pathogen
 [5]: https://github.com/gmarik/vundle
 [6]: https://github.com/Shougo/neobundle.vim
+[7]: https://github.com/olivierverdier/zsh-git-prompt

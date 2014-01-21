@@ -45,6 +45,11 @@ fun! promptline#slices#python_virtualenv(...)
   return '${VIRTUAL_ENV##*/}'
 endfun
 
+fun! promptline#slices#git_status(...)
+  return { 'function_name': '__promptline_git_status',
+          \'function_body': readfile(globpath(&rtp, "autoload/promptline/slices/git_status.sh"))}
+endfun
+
 " internally used to wrap any string, like \w, \h, $(command) with the given colors / separators
 fun! promptline#slices#wrapper(...)
   return {
