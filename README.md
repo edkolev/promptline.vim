@@ -276,6 +276,12 @@ There are similar plugins, but all of them seem to use an external (to the shell
 I think the shell's prompt should be as fast as possible, without being slowed by an external process.
 The only external process, spawned by promptline-generated prompt, is used to get VCS branch (i.e. `git`)
 
+## Known Issues
+
+- zsh empty whitespace on right prompt
+
+  Up until version 5.0.5, zsh had a hard-coded space at the end of the right prompt. To remove the extra space, install zsh 5.0. (or later) and set `ZLE_RPROMPT_INDENT=1` in zshrc.
+
 ## License
 
 MIT License. Copyright (c) 2013 Evgeni Kolev.
