@@ -284,7 +284,7 @@ The only external process, spawned by promptline-generated prompt, is used to ge
 
 ## License
 
-MIT License. Copyright (c) 2013 Evgeni Kolev.
+MIT License. Copyright (c) 2013-2014 Evgeni Kolev.
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/edkolev/promptline.vim/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 

@@ -1,6 +1,6 @@
 " The MIT License (MIT)
 "
-" Copyright (c) 2013 Evgeni Kolev
+" Copyright (c) 2013-2014 Evgeni Kolev
 
 fun! promptline#themes#load_theme(theme) abort
   if type(a:theme) == type("")

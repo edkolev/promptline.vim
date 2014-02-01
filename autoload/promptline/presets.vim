@@ -1,6 +1,6 @@
 " The MIT License (MIT)
 "
-" Copyright (c) 2013 Evgeni Kolev
+" Copyright (c) 2013-2014 Evgeni Kolev
 
 let s:DEFAULT_LEFT_ONLY_SECTIONS = [ 'a', 'b', 'c', 'x', 'y', 'z', 'warn' ]
 let s:DEFAULT_LEFT_SECTIONS      = [ 'a', 'b', 'c' ]

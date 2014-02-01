@@ -1,6 +1,6 @@
 " The MIT License (MIT)
 "
-" Copyright (c) 2013 Evgeni Kolev
+" Copyright (c) 2013-2014 Evgeni Kolev
 
 fun! s:complete_snapshot_files(A,L,P)
   let files = glob(a:A . '*', 1, 1)
