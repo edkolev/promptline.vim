@@ -175,7 +175,9 @@ fun! s:get_prompt_installation()
       \'    precmd_functions+=(__promptline)',
       \'  fi',
       \'else',
-      \'  PROMPT_COMMAND=__promptline',
+      \'  if [[ ! "$PROMPT_COMMAND" == *__promptline* ]]; then',
+      \"    PROMPT_COMMAND=\"$PROMPT_COMMAND\"$'\n''__promptline'",
+      \'  fi',
       \'fi']
 endfun
 
