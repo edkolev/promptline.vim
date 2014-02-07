@@ -176,7 +176,7 @@ fun! s:get_prompt_installation()
       \'  fi',
       \'else',
       \'  if [[ ! "$PROMPT_COMMAND" == *__promptline* ]]; then',
-      \"    PROMPT_COMMAND=\"$PROMPT_COMMAND\"$'\n''__promptline'",
+      \"    PROMPT_COMMAND='__promptline;'$'\\n'\"$PROMPT_COMMAND\"",
       \'  fi',
       \'fi']
 endfun
