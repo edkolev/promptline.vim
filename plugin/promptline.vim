@@ -3,7 +3,7 @@
 " Copyright (c) 2013-2014 Evgeni Kolev
 
 fun! s:complete_snapshot_files(A,L,P)
-  let files = glob(a:A . '*', 1, 1)
+  let files = split(glob(a:A . '*', 1), "\n")
 
   if len(files) == 1 && isdirectory(files[0]) > 0
     let files[0] .= '/'
