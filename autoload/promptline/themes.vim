@@ -16,7 +16,7 @@ fun! promptline#themes#load_airline_theme(...)
   let mode = get(a:, 1, 'normal')
 
   if !has_key(g:, 'airline_theme') || !has_key(g:, 'airline#themes#' . g:airline_theme . '#palette')
-    throw "promptline: Can't load theme from airline. Is airline loaded?"
+    throw "promptline: Can't load theme from airline. Is vim-airline loaded?"
   endif
 
   let mode_palette = g:airline#themes#{g:airline_theme}#palette[mode]
@@ -41,5 +41,27 @@ fun! promptline#themes#load_stock_theme(theme_name) abort
     throw "promptline: Theme cannot be found '" . a:theme_name . "'"
   endtry
   return theme
+endfun
+
+fun! promptline#themes#load_lightline_theme(mode) abort
+  if !exists('*lightline#palette')
+    throw "promptline: Can't load theme from lightline. Is latest lightline.vim loaded?"
+  endif
+
+  let palette = lightline#palette()
+  let mode_palette = extend( deepcopy(palette.normal), palette[a:mode] )
+
+  return promptline#themes#create_theme_from_lightline(mode_palette)
+endfun
+
+fun! promptline#themes#create_theme_from_lightline(mode_palette)
+  return {
+        \'a'    : a:mode_palette.left[0][2:4],
+        \'b'    : a:mode_palette.left[1][2:4],
+        \'c'    : a:mode_palette.middle[0][2:4],
+        \'x'    : a:mode_palette.middle[0][2:4],
+        \'y'    : a:mode_palette.right[1][2:4],
+        \'z'    : a:mode_palette.right[0][2:4],
+        \'warn'  : a:mode_palette.warning[0][2:4]}
 endfun
 
