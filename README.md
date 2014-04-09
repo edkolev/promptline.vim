@@ -268,6 +268,8 @@ The plugin's files follow the standard layout for vim plugins.
 - [Vundle][5] `Bundle 'edkolev/promptline.vim'`
 - [NeoBundle][6] `NeoBundle 'edkolev/promptline.vim'`
 
+For the powerline symbols (the arrows), a [powerline font][9] is required.
+
 ## Inspired by
 
 - Bailey Ling's [vim-airline][1]
@@ -301,3 +303,4 @@ MIT License. Copyright (c) 2013-2014 Evgeni Kolev.
 [6]: https://github.com/Shougo/neobundle.vim
 [7]: https://github.com/olivierverdier/zsh-git-prompt
 [8]: https://github.com/itchyny/lightline.vim
+[9]: https://github.com/Lokaltog/powerline-fonts
