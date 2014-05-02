@@ -289,7 +289,7 @@ The only external process, spawned by promptline-generated prompt, is used to ge
 
 - zsh empty whitespace on right prompt
 
-  Up until version 5.0.5, zsh had a hard-coded space at the end of the right prompt. To remove the extra space, install zsh 5.0. (or later) and set `ZLE_RPROMPT_INDENT=1` in zshrc.
+  Up until version 5.0.5, zsh had a hard-coded space at the end of the right prompt. To remove the extra space, install zsh 5.0.5 (or later) and set `ZLE_RPROMPT_INDENT=0` in zshrc.
 
 ## License
 
