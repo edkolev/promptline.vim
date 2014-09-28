@@ -49,8 +49,12 @@ endfun
 
 fun! s:make_function( function_name, preset, section_names, is_left )
   if len(a:section_names) == 0
-    return []
+    return [
+          \'function ' . a:function_name . ' {',
+          \'  return',
+          \'}']
   endif
+
   let wrapper_slice = promptline#slices#wrapper()
 
   let section_local_variables = a:is_left ?

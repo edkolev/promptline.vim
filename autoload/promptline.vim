@@ -70,7 +70,7 @@ fun! promptline#create_snapshot(file, theme, preset) abort
         \ [ '#'] +
         \ function_definitions +
         \ ['function __promptline {'] +
-        \ ['  local last_exit_code="$?"'] +
+        \ ['  local last_exit_code="${PROMPTLINE_LAST_EXIT_CODE:-$?}"'] +
         \ [''] +
         \ shell_escape_codes +
         \ symbol_definitions +
@@ -104,7 +104,11 @@ fun! s:get_prompt_variables_installation(prompt)
         \'    PROMPT="' . join(a:prompt.left_sections, '') . '"',
         \'    RPROMPT="' . join(a:prompt.right_sections, '') . '"',
         \'  elif [[ -n ${FISH_VERSION-} ]]; then',
-        \'    __promptline_ps1',
+        \'    if [[ -n "$1" ]]; then',
+        \'      [[ "$1" = "left" ]] && __promptline_left_prompt || __promptline_right_prompt',
+        \'    else',
+        \'      __promptline_ps1',
+        \'    fi',
         \'  else',
         \'    PS1="' . join(a:prompt.sections, '') . '"',
         \'  fi']
@@ -179,7 +183,7 @@ fun! s:get_prompt_installation()
       \'    precmd_functions+=(__promptline)',
       \'  fi',
       \'elif [[ -n ${FISH_VERSION-} ]]; then',
-      \'  __promptline fish',
+      \'  __promptline "$1"',
       \'else',
       \'  if [[ ! "$PROMPT_COMMAND" == *__promptline* ]]; then',
       \"    PROMPT_COMMAND='__promptline;'$'\\n'\"$PROMPT_COMMAND\"",
