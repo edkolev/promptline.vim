@@ -26,12 +26,12 @@ endfun
 
 fun! promptline#slices#host(...)
   " host is \h in bash, %m in zsh
-  return '$([[ -n ${ZSH_VERSION-} ]] && print %m || printf "%s" \\h)'
+  return '$(if [[ -n ${ZSH_VERSION-} ]]; then print %m; elif [[ -n ${FISH_VERSION-} ]]; then hostname -s; else printf "%s" \\h; fi )'
 endfun
 
 fun! promptline#slices#user(...)
   " user is \u in bash, %n in zsh
-  return '$([[ -n ${ZSH_VERSION-} ]] && print %n || printf "%s" \\u)'
+  return '$(if [[ -n ${ZSH_VERSION-} ]]; then print %n; elif [[ -n ${FISH_VERSION-} ]]; then printf "%s" "$USER"; else printf "%s" \\u; fi )'
 endfun
 
 fun! promptline#slices#battery(...)
