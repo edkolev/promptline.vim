@@ -10,6 +10,11 @@ Simple shell prompt generator with support for powerline symbols and airline int
 
 ![promptline_head2](https://f.cloud.github.com/assets/1532071/1811043/4419f3ce-6e41-11e3-89cf-f495325ab1a2.png)
 
+> fish
+
+![promptline_head3](https://cloud.githubusercontent.com/assets/1532071/4437991/6b687cba-47a4-11e4-8efe-b53aa1ef34bb.png)
+
+
 ## Features
 
 - **Create a plain .sh file to manage the prompt.** The generated file can be sourced by the shell on login.
@@ -19,7 +24,7 @@ Simple shell prompt generator with support for powerline symbols and airline int
 - **Configure the prompt with a simple hash**, in case stock presets don't meet your needs
 - **Preloaded with commonly used prompt sections** e.g. branch name, last exit code (if not zero)
 
-The plugin has been tested in bash and zsh
+The plugin has been tested in bash, zsh and fish
 
 More screenshots can be found in the [wiki](https://github.com/edkolev/promptline.vim/wiki/Screenshots)
 
@@ -55,10 +60,22 @@ Specify theme and preset:
 :PromptlineSnapshot [file] [theme] [preset]
 ```
 
-The created file should be sourced by the shell
+The created file should be sourced by bash/zsh:
 ```
 # in .bash.rc / .zshrc
 source [file]
+```
+
+For fish:
+```
+# in .config.fish
+function fish_prompt
+  env FISH_VERSION=$FISH_VERSION PROMPTLINE_LAST_EXIT_CODE=$status bash ~/.promptline.sh left
+end
+
+function fish_right_prompt
+  env FISH_VERSION=$FISH_VERSION PROMPTLINE_LAST_EXIT_CODE=$status bash ~/.promptline.sh right
+end
 ```
 
 ## Configuration
