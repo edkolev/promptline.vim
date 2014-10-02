@@ -118,7 +118,7 @@ let g:promptline_preset = {
 " available slices:
 "
 " promptline#slices#cwd() - current dir, truncated to 3 dirs. To configure: promptline#slices#cwd({ 'dir_limit': 4 })
-" promptline#slices#vcs_branch() - branch name only. by default only git branch is enabled. Use promptline#slices#vcs_branch({ 'hg': 1, 'svn': 1}) to enable check for svn and mercurial branches. Note that always checking if inside a branch slows down the prompt
+" promptline#slices#vcs_branch() - branch name only. By default, only git branch is enabled. Use promptline#slices#vcs_branch({ 'hg': 1, 'svn': 1, 'fossil': 1}) to enable check for svn, mercurial and fossil branches. Note that always checking if inside a branch slows down the prompt
 " promptline#slices#last_exit_code() - display exit code of last command if not zero
 " promptline#slices#jobs() - display number of shell jobs if more than zero
 " promptline#slices#battery() - display battery percentage (on OSX and linux) only if below 10%. Configure the threshold with promptline#slices#battery({ 'threshold': 25 })

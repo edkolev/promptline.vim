@@ -3,6 +3,7 @@ fun! promptline#slices#vcs_branch#function_body(options)
   let git = get(a:options, 'git', 1)
   let svn = get(a:options, 'svn', 0)
   let hg = get(a:options, 'hg', 0)
+  let fossil = get(a:options, 'fossil', 0)
 
   let lines = [
         \'function __promptline_vcs_branch {',
@@ -60,6 +61,19 @@ fun! promptline#slices#vcs_branch#function_body(options)
         \'    fi',
         \'  fi',
         \'']
+  endif
+
+  if fossil
+    let lines += [
+        \'',
+        \'  # fossil',
+        \'  if hash fossil 2>/dev/null; then',
+        \'    if branch=$( fossil branch 2>/dev/null ); then',
+        \'      branch=${branch##* }',
+        \'      printf "%s" "${branch_symbol}${branch:-unknown}"',
+        \'      return',
+        \'    fi',
+        \'  fi']
   endif
 
   let lines += [
