@@ -122,7 +122,7 @@ let g:promptline_preset = {
 " promptline#slices#last_exit_code() - display exit code of last command if not zero
 " promptline#slices#jobs() - display number of shell jobs if more than zero
 " promptline#slices#battery() - display battery percentage (on OSX and linux) only if below 10%. Configure the threshold with promptline#slices#battery({ 'threshold': 25 })
-" promptline#slices#host()
+" promptline#slices#host() - current hostname.  To hide the hostname unless connected via SSH, use promptline#slices#host({ 'only_if_ssh': 1 })
 " promptline#slices#user()
 " promptline#slices#python_virtualenv() - display which virtual env is active (empty is none)
 " promptline#slices#git_status() - count of commits ahead/behind upstream, count of modified/added/unmerged files, symbol for clean branch and symbol for existing untraced files

@@ -25,8 +25,10 @@ fun! promptline#slices#jobs(...)
 endfun
 
 fun! promptline#slices#host(...)
-  " host is \h in bash, %m in zsh
-  return '$(if [[ -n ${ZSH_VERSION-} ]]; then print %m; elif [[ -n ${FISH_VERSION-} ]]; then hostname -s; else printf "%s" \\h; fi )'
+  let options = get(a:, 1, {})
+  return {
+        \'function_name': '__promptline_host',
+        \'function_body': promptline#slices#host#function_body(options)}
 endfun
 
 fun! promptline#slices#user(...)
