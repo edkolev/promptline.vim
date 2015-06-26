@@ -66,12 +66,22 @@ fun! s:make_function( function_name, preset, section_names, is_left )
         \'function ' . a:function_name . ' {',
         \ section_local_variables]
 
+  let b:is_warn = 0
   for section_name in a:section_names
     let [ slice_prefix, slice_empty_prefix, slice_middle, slice_suffix ] = s:get_slice_modifiers(section_name, a:is_left)
-    let func_body += [
-          \'',
-          \'  # section "' . section_name . '" header',
-          \'  slice_prefix=' . slice_prefix  . ' slice_suffix=' . slice_suffix . ' slice_joiner=' . slice_middle . ' slice_empty_prefix=' . slice_empty_prefix]
+    if section_name == "warn"
+        let b:is_warn = 1
+        let func_body += [
+            \'',
+            \'  # section "' . section_name . '" header',
+            \'  if [ ! -e $(__promptline_last_exit_code) ]; then',
+            \'      slice_prefix=' . slice_prefix  . ' slice_suffix=' . slice_suffix . ' slice_joiner=' . slice_middle . ' slice_empty_prefix=' . slice_empty_prefix ]
+    else
+        let func_body += [
+            \'',
+            \'  # section "' . section_name . '" header',
+            \'  slice_prefix=' . slice_prefix  . ' slice_suffix=' . slice_suffix . ' slice_joiner=' . slice_middle . ' slice_empty_prefix=' . slice_empty_prefix ]
+    endif
 
     " only left sections should check $is_prompt_empty
     if a:is_left
@@ -86,7 +96,17 @@ fun! s:make_function( function_name, preset, section_names, is_left )
             \ : '"' . slice . '"'
       let slice_content =  '  ' . wrapper_slice.function_name . ' ' . slice_value . ' "$slice_prefix" "$slice_suffix" && { slice_prefix="$slice_joiner";' . slice_command_trailer . ' }'
 
-      let func_body += [ slice_content ]
+      if b:is_warn == 1
+        let b:is_warn = 0
+        let func_body += [ 
+                    \ '    ' . slice_content,
+                    \ ' else',
+                    \ '     slice_prefix="${reset}"',
+                    \ '    ' . wrapper_slice.function_name . ' "${reset} "',
+                    \ ' fi' ]
+    else
+        let func_body += [ slice_content ]
+    endif
       unlet slice
     endfor
   endfor
