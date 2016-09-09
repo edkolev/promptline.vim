@@ -28,20 +28,36 @@ The plugin has been tested in bash, zsh and fish
 
 More screenshots can be found in the [wiki](https://github.com/edkolev/promptline.vim/wiki/Screenshots)
 
-#### Quick Start with airline installed
+#### Quick Start for Bash/ZSH with airline installed
 
 1. In vim `:PromptlineSnapshot ~/.shell_prompt.sh airline`
 2. In bash/zsh `source ~/.shell_prompt.sh`
 
-#### Quick Start with lightline installed
+#### Quick Start for Bash/ZSH with lightline installed
 
 1. In vim `:PromptlineSnapshot ~/.shell_prompt.sh lightline`
 2. In bash/zsh `source ~/.shell_prompt.sh`
 
-#### Quick Start
+#### Quick Start for BASH/ZSH without lightline or airline installed
 
 1. In vim `:PromptlineSnapshot ~/.shell_prompt.sh`
 2. In bash/zsh `source ~/.shell_prompt.sh`
+
+#### Quick Start for Fish:
+
+1. In vim `:PromptlineSnapshot ~/.shell_prompt.sh [theme] [preset]`
+2. Add the following to ~/.config/fish/.config.fish
+
+```
+function fish_prompt
+  env FISH_VERSION=$FISH_VERSION PROMPTLINE_LAST_EXIT_CODE=$status bash ~/.shell_prompt.sh left
+end
+
+function fish_right_prompt
+  env FISH_VERSION=$FISH_VERSION PROMPTLINE_LAST_EXIT_CODE=$status bash ~/.shell_prompt.sh right
+end
+
+```
 
 ## Usage
 
@@ -70,11 +86,11 @@ For fish:
 ```
 # in .config.fish
 function fish_prompt
-  env FISH_VERSION=$FISH_VERSION PROMPTLINE_LAST_EXIT_CODE=$status bash ~/.promptline.sh left
+  env FISH_VERSION=$FISH_VERSION PROMPTLINE_LAST_EXIT_CODE=$status bash ~/.shell_prompt.sh left
 end
 
 function fish_right_prompt
-  env FISH_VERSION=$FISH_VERSION PROMPTLINE_LAST_EXIT_CODE=$status bash ~/.promptline.sh right
+  env FISH_VERSION=$FISH_VERSION PROMPTLINE_LAST_EXIT_CODE=$status bash ~/.shell_prompt.sh right
 end
 ```
 
