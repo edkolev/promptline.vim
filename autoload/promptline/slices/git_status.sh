@@ -7,6 +7,7 @@ function __promptline_git_status {
   local clean_symbol="✔"
   local has_untracked_files_symbol="…"
   local stash_symbol="↥"
+  local wip_symbol="[WIP]"
 
   local ahead_symbol="↑"
   local behind_symbol="↓"
@@ -20,6 +21,8 @@ function __promptline_git_status {
   set -- $(git stash list | wc -l)
   local stash_count=$1;
 
+  set -- $(git log -n 1 | grep -c "\-\-wip\-\-")
+  local wip_count=$1;
   # Added (A), Copied (C), Deleted (D), Modified (M), Renamed (R), changed (T), Unmerged (U), Unknown (X), Broken (B)
   while read line; do
     case "$line" in
@@ -51,4 +54,5 @@ function __promptline_git_status {
   [[ $has_untracked_files -gt 0 ]] && { printf "%s" "$leading_whitespace$has_untracked_files_symbol"; leading_whitespace=" "; }
   [[ $is_clean -gt 0 ]]            && { printf "%s" "$leading_whitespace$clean_symbol"; leading_whitespace=" "; }
   [[ $stash_count -gt 0 ]]         && { printf "%s" "$leading_whitespace$stash_symbol$stash_count"; leading_whitespace=" "; }
+  [[ $wip_count -gt 0 ]]           && { printf "%s" "$leading_whitespace$wip_symbol"; leading_whitespace=" "; }
 }
