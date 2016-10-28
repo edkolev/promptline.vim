@@ -6,6 +6,7 @@ function __promptline_git_status {
   local modified_symbol="+"
   local clean_symbol="✔"
   local has_untracked_files_symbol="…"
+  local stash_symbol="↥"
 
   local ahead_symbol="↑"
   local behind_symbol="↓"
@@ -15,6 +16,9 @@ function __promptline_git_status {
   set -- $(git rev-list --left-right --count @{upstream}...HEAD 2>/dev/null)
   local behind_count=$1
   local ahead_count=$2
+
+  set -- $(git stash list | wc -l)
+  local stash_count=$1;
 
   # Added (A), Copied (C), Deleted (D), Modified (M), Renamed (R), changed (T), Unmerged (U), Unknown (X), Broken (B)
   while read line; do
@@ -46,4 +50,5 @@ function __promptline_git_status {
   [[ $added_count -gt 0 ]]         && { printf "%s" "$leading_whitespace$added_symbol$added_count"; leading_whitespace=" "; }
   [[ $has_untracked_files -gt 0 ]] && { printf "%s" "$leading_whitespace$has_untracked_files_symbol"; leading_whitespace=" "; }
   [[ $is_clean -gt 0 ]]            && { printf "%s" "$leading_whitespace$clean_symbol"; leading_whitespace=" "; }
+  [[ $stash_count -gt 0 ]]         && { printf "%s" "$leading_whitespace$stash_symbol$stash_count"; leading_whitespace=" "; }
 }
