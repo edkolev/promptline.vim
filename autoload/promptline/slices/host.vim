@@ -4,7 +4,7 @@ fun! promptline#slices#host#function_body( options )
         \'function __promptline_host {',
         \'  local only_if_ssh="' . only_if_ssh . '"',
         \'',
-        \'  if [ ! $only_if_ssh -o -n "${SSH_CLIENT}" ]; then',
+        \'  if [ $only_if_ssh -eq 0 -o -n "${SSH_CLIENT}" ]; then',
         \'    if [[ -n ${ZSH_VERSION-} ]]; then print %m; elif [[ -n ${FISH_VERSION-} ]]; then hostname -s; else printf "%s" \\h; fi',
         \'  fi',
         \'}']
