@@ -126,6 +126,7 @@ let g:promptline_preset = {
 " promptline#slices#user()
 " promptline#slices#python_virtualenv() - display which virtual env is active (empty is none)
 " promptline#slices#git_status() - count of commits ahead/behind upstream, count of modified/added/unmerged files, symbol for clean branch and symbol for existing untraced files
+" promptline#slices#conda_env() - display which conda env is active (empty is none)
 "
 " any command can be used in a slice, for example to print the output of whoami in section 'b':
 "       \'b' : [ '$(whoami)'],
