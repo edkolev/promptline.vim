@@ -12,7 +12,7 @@ function __promptline_git_status {
 
   local unmerged_count=0 modified_count=0 has_untracked_files=0 added_count=0 is_clean=""
 
-  set -- $(git rev-list --left-right --count @{upstream}...HEAD 2>/dev/null)
+  set -- $(git rev-list --left-right --count "@{upstream}...HEAD" 2>/dev/null)
   local behind_count=$1
   local ahead_count=$2
 
