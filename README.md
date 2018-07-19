@@ -21,7 +21,7 @@ Simple shell prompt generator with support for powerline symbols and airline int
 - **Very fast prompt.** No external binaries are spawned to render the prompt (no python, not even grep or sed)
 - **Use [vim-airline][1]/[lightline.vim][8] colors**, so the prompt shares the same colors with vim's statusline
 - **Preloaded with stock themes and presets**, which can be combined in multiple ways
-- **Configure the prompt with a simple hash**, in case stock presets don't meet your needs
+- **Configure the prompt with a simple associative array**, in case stock presets don't meet your needs
 - **Preloaded with commonly used prompt sections** e.g. branch name, last exit code (if not zero)
 
 The plugin has been tested in bash, zsh and fish
