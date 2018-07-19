@@ -30,18 +30,18 @@ More screenshots can be found in the [wiki](https://github.com/edkolev/promptlin
 
 #### Quick Start with airline installed
 
-1. In vim `:PromptlineSnapshot ~/.shell_prompt.sh airline`
-2. In bash/zsh `source ~/.shell_prompt.sh`
+1. In vim `:PromptlineSnapshot ~/.promptline.sh airline`
+2. In bash/zsh `source ~/.promptline.sh`
 
 #### Quick Start with lightline installed
 
-1. In vim `:PromptlineSnapshot ~/.shell_prompt.sh lightline`
-2. In bash/zsh `source ~/.shell_prompt.sh`
+1. In vim `:PromptlineSnapshot ~/.promptline.sh lightline`
+2. In bash/zsh `source ~/.promptline.sh`
 
 #### Quick Start
 
-1. In vim `:PromptlineSnapshot ~/.shell_prompt.sh`
-2. In bash/zsh `source ~/.shell_prompt.sh`
+1. In vim `:PromptlineSnapshot ~/.promptline.sh`
+2. In bash/zsh `source ~/.promptline.sh`
 
 ## Usage
 
