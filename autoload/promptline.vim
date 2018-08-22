@@ -169,10 +169,10 @@ fun! s:get_symbol_definitions()
 
   return [
         \'  local space="' . symbols.space . '"',
-        \'  local sep="' . symbols.left . '"',
-        \'  local rsep="' . symbols.right . '"',
-        \'  local alt_sep="' . symbols.left_alt . '"',
-        \'  local alt_rsep="' . symbols.right_alt . '"']
+        \'  local sep="${noprint}' . symbols.left . '${end_noprint}"',
+        \'  local rsep="${noprint}' . symbols.right . '${end_noprint}"',
+        \'  local alt_sep="${noprint}' . symbols.left_alt . '${end_noprint}"',
+        \'  local alt_rsep="${noprint}' . symbols.right_alt . '${end_noprint}"']
 endfun
 
 fun! s:get_prompt_installation()
