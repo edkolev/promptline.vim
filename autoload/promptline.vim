@@ -1,6 +1,6 @@
 " The MIT License (MIT)
 "
-" Copyright (c) 2013-2014 Evgeni Kolev
+" Copyright (c) 2013-2019 Evgeni Kolev
 
 let s:FG = 0
 let s:BG = 1

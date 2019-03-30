@@ -1,6 +1,6 @@
 " The MIT License (MIT)
 "
-" Copyright (c) 2014 Evgeni Kolev
+" Copyright (c) 2019 Evgeni Kolev
 
 fun! promptline#api#create_snapshot_with_theme(file, theme)
   return promptline#snapshot(1, a:file, a:theme)

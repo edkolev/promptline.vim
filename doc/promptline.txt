@@ -130,6 +130,6 @@ LICENSE                                                 *promptline-license*
 
 The MIT License (MIT)
 
-Copyright (c) 2014 Evgeni Kolev
+Copyright (c) 2019 Evgeni Kolev
 
 vim:tw=78:ts=8:ft=help:norl:

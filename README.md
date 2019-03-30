@@ -311,7 +311,7 @@ The only external process, spawned by promptline-generated prompt, is used to ge
 
 ## License
 
-MIT License. Copyright (c) 2013-2018 Evgeni Kolev.
+MIT License. Copyright (c) 2013-2019 Evgeni Kolev.
 
 [1]: https://github.com/bling/vim-airline
 [2]: https://github.com/Lokaltog/powerline
