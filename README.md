@@ -1,6 +1,6 @@
 # promptline.vim
 
-Simple shell prompt generator with support for powerline symbols and airline integration
+Simple shell prompt generator with support for powerline symbols and airline integration. Note that this does not add a shell to Vim, but rather makes your shell prompt resemble Vim Powerline/Airline/Lightline.
 
 > bash
 
