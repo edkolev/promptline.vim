@@ -2,13 +2,18 @@ fun! promptline#slices#vcs_branch#function_body(options)
   let branch_symbol = promptline#symbols#get().vcs_branch
   let git = get(a:options, 'git', 1)
   let svn = get(a:options, 'svn', 0)
-  let hg = get(a:options, 'hg', 0)
+  let hg = get(a:options, 'hg', 1)
   let fossil = get(a:options, 'fossil', 0)
+  let git_icon = ' '
+  let github_icon = ' '
+  let hg_icon = ' '
 
   let lines = [
         \'function __promptline_vcs_branch {',
         \'  local branch',
-        \'  local branch_symbol="' . branch_symbol . '"']
+        \'  local branch_symbol="' . branch_symbol . '"',
+        \'  local hg_icon="' . hg_icon . '"',
+        \'  local git_icon="' . git_icon . '"']
 
   if git
     let lines += [
@@ -17,7 +22,7 @@ fun! promptline#slices#vcs_branch#function_body(options)
         \'  if hash git 2>/dev/null; then',
         \'    if branch=$( { git symbolic-ref --quiet HEAD || git rev-parse --short HEAD; } 2>/dev/null ); then',
         \'      branch=${branch##*/}',
-        \'      printf "%s" "${branch_symbol}${branch:-unknown}"',
+        \'      printf "%s" "${git_icon}${branch:-unknown}"',
         \'      return',
         \'    fi',
         \'  fi']
@@ -29,7 +34,7 @@ fun! promptline#slices#vcs_branch#function_body(options)
         \'  # mercurial',
         \'  if hash hg 2>/dev/null; then',
         \'    if branch=$(hg branch 2>/dev/null); then',
-        \'      printf "%s" "${branch_symbol}${branch:-unknown}"',
+        \'      printf "%s" "${hg_icon}${branch:-unknown}"',
         \'      return',
         \'    fi',
         \'  fi']
