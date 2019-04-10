@@ -10,7 +10,7 @@ fun! promptline#slices#cwd#function_body( options )
         \'  local part_count=0',
         \'  local formatted_cwd=""',
         \'  local dir_sep="' . dir_sep . '"',
-        \'  local tilde="~"',
+        \'  local tilde=" "',
         \'',
         \'  local cwd="${PWD/#$HOME/$tilde}"',
         \'',
