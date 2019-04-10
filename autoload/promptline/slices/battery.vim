@@ -33,6 +33,7 @@ fun! promptline#slices#battery#function_body(options)
         \'  fi',
         \'',
         \'  # linux',
+        \'  if $( ls /sys/class/power_supply/ | grep BAT > /dev/null ) ; then',
         \'  for possible_battery_dir in /sys/class/power_supply/BAT*; do',
         \'    if [[ -d $possible_battery_dir && -f "$possible_battery_dir/energy_full" && -f "$possible_battery_dir/energy_now" ]]; then',
         \'      current_capacity=$( <"$possible_battery_dir/energy_now" )',
@@ -44,6 +45,7 @@ fun! promptline#slices#battery#function_body(options)
         \'      return',
         \'    fi',
         \'  done',
+        \'  fi',
         \'',
         \'return 1',
         \'}']
