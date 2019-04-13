@@ -8,6 +8,7 @@ let s:simple_symbols = {
     \ 'left_alt'       : '|',
     \ 'right_alt'      : '|',
     \ 'dir_sep'        : ' / ',
+    \ 'cwd_home'       : '~',
     \ 'truncation'     : '...',
     \ 'vcs_branch'     : '',
     \ 'battery'        : '',
