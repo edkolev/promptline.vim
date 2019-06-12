@@ -33,6 +33,8 @@ fun! promptline#slices#battery#function_body(options)
         \'  fi',
         \'',
         \'  # linux',
+        \'  setopt localoptions',
+        \'  setopt null_glob # ensure globbing BAT* on desktops does not throw an error',
         \'  for possible_battery_dir in /sys/class/power_supply/BAT*; do',
         \'    if [[ -d $possible_battery_dir && -f "$possible_battery_dir/energy_full" && -f "$possible_battery_dir/energy_now" ]]; then',
         \'      current_capacity=$( <"$possible_battery_dir/energy_now" )',
