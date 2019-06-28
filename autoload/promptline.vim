@@ -4,8 +4,25 @@
 
 let s:FG = 0
 let s:BG = 1
+let s:ATTRIBUTES = 2
 let s:SHELL_FG_CODE = 38
 let s:SHELL_BG_CODE = 48
+let s:SHELL_BRIGHT_CODE = 1
+let s:SHELL_DIM_CODE = 2
+let s:SHELL_STANDOUT_CODE = 3
+let s:SHELL_UNDERSCORE_CODE = 4
+let s:SHELL_BLINK_CODE = 5
+let s:SHELL_REVERSE_CODE = 7
+let s:SHELL_HIDDEN_CODE = 8
+let s:SHELL_STRIKEOUT_CODE = 9
+let s:SHELL_NORMAL_CODE = 20
+let s:SHELL_RESETBRIGHTDIM_CODE = 22
+let s:SHELL_RESETSTANDOUT_CODE = 23
+let s:SHELL_RESETUNDERSCORE_CODE = 24
+let s:SHELL_RESETBLINK_CODE = 25
+let s:SHELL_RESETREVERSE_CODE = 27
+let s:SHELL_RESETHIDDEN_CODE = 28
+let s:SHELL_RESETSTRIKEOUT_CODE = 29
 
 let s:default_theme = 'powerlineclone'
 let s:default_preset = 'powerlineclone'
@@ -39,12 +56,67 @@ fun! s:validate_file(overwrite, file)
   return file
 endfun
 
-fun! s:bg(color)
-  return printf('"${wrap}%d;5;%d${end_wrap}"', s:SHELL_BG_CODE, a:color)
+fun! s:parseAttributes(attributes)
+  let attrs = split(a:attributes, ",")
+  let result = []
+
+  " bright and dim handled together, as they're mutually exclusive, and XTerm
+  " resets both using a single code
+  if index(attrs, "bright") != -1 || index(attrs, "bold") != -1
+    call add(result, s:SHELL_BRIGHT_CODE)
+  elseif index(attrs, "dim") != -1
+    call add(result, s:SHELL_DIM_CODE)
+  else
+    call add(result, s:SHELL_RESETBRIGHTDIM_CODE)
+  endif
+
+  if index(attrs, "standout") != -1 || index(attrs, "italic") != -1
+    call add(result, s:SHELL_STANDOUT_CODE)
+  else
+    call add(result, s:SHELL_RESETSTANDOUT_CODE)
+  endif
+
+  if index(attrs, "underscore") != -1 || index(attrs, "underline") != -1
+    call add(result, s:SHELL_UNDERSCORE_CODE)
+  else
+    call add(result, s:SHELL_RESETUNDERSCORE_CODE)
+  endif
+
+  if index(attrs, "blink") != -1
+    call add(result, s:SHELL_BLINK_CODE)
+  else
+    call add(result, s:SHELL_RESETBLINK_CODE)
+  endif
+
+  if index(attrs, "reverse") != -1
+    call add(result, s:SHELL_REVERSE_CODE)
+  else
+    call add(result, s:SHELL_RESETREVERSE_CODE)
+  endif
+
+  if index(attrs, "hidden") != -1
+    call add(result, s:SHELL_HIDDEN_CODE)
+  else
+    call add(result, s:SHELL_RESETHIDDEN_CODE)
+  endif
+
+  if index(attrs, "strikeout") != -1 || index(attrs, "strikethrough") != -1
+    call add(result, s:SHELL_STRIKEOUT_CODE)
+  else
+    call add(result, s:SHELL_RESETSTRIKEOUT_CODE)
+  endif
+
+  return join(result, ";")
 endfun
 
-fun! s:fg(color)
-  return printf('"${wrap}%d;5;%d${end_wrap}"', s:SHELL_FG_CODE, a:color)
+fun! s:bg(color, attributes)
+  let attrs = s:parseAttributes(a:attributes)
+  return printf('"${wrap}%d;5;%d;%s${end_wrap}"', s:SHELL_BG_CODE, a:color, attrs)
+endfun
+
+fun! s:fg(color, attributes)
+  let attrs = s:parseAttributes(a:attributes)
+  return printf('"${wrap}%d;5;%d;%s${end_wrap}"', s:SHELL_FG_CODE, a:color, attrs)
 endfun
 
 fun! promptline#create_snapshot(file, theme, preset) abort
@@ -126,10 +198,15 @@ fun! s:get_color_variables( theme, preset )
       throw "promptline: theme doesn't define colors for '". section_name . "' section"
     endif
 
-    let [fg, bg] = a:theme[section_name][s:FG : s:BG]
-    let color_variables += [ '  local ' .section_name. '_fg=' . s:fg(fg) ]
-    let color_variables += [ '  local ' .section_name. '_bg=' . s:bg(bg) ]
-    let color_variables += [ '  local ' .section_name. '_sep_fg=' . s:fg(bg) ]
+    if len(a:theme[section_name]) == 3
+      let [fg, bg, attributes] = a:theme[section_name][s:FG : s:ATTRIBUTES]
+    else
+      let [fg, bg] = a:theme[section_name][s:FG : s:BG]
+      let attributes = ''
+    endif
+    let color_variables += [ '  local ' .section_name. '_fg=' . s:fg(fg, attributes) ]
+    let color_variables += [ '  local ' .section_name. '_bg=' . s:bg(bg, attributes) ]
+    let color_variables += [ '  local ' .section_name. '_sep_fg=' . s:fg(bg, attributes) ]
   endfor
   return color_variables
 endfun
