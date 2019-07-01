@@ -6,6 +6,16 @@ fun! promptline#slices#vcs_branch#function_body(options)
   let fossil = get(a:options, 'fossil', 0)
 
   let lines = [
+        \'function __promptline_vcs_test() {',
+        \'  local dir="$(pwd -P 2>/dev/null)"',
+        \'  while [[ -n $dir ]]; do',
+        \'    if test "$1" "$dir/$2"; then',
+        \'      return 0',
+        \'    fi',
+        \'    dir=${dir%/*}',
+        \'  done',
+        \'  return 0',
+        \'}',
         \'function __promptline_vcs_branch {',
         \'  local branch',
         \'  local branch_symbol="' . branch_symbol . '"']
@@ -14,7 +24,7 @@ fun! promptline#slices#vcs_branch#function_body(options)
     let lines += [
         \'',
         \'  # git',
-        \'  if hash git 2>/dev/null; then',
+        \'  if hash git 2>/dev/null && __promptline_vcs_test -e .git; then',
         \'    if branch=$( { git symbolic-ref --quiet HEAD || git rev-parse --short HEAD; } 2>/dev/null ); then',
         \'      branch=${branch##*/}',
         \'      printf "%s" "${branch_symbol}${branch:-unknown}"',
@@ -27,7 +37,7 @@ fun! promptline#slices#vcs_branch#function_body(options)
     let lines += [
         \'',
         \'  # mercurial',
-        \'  if hash hg 2>/dev/null; then',
+        \'  if hash hg 2>/dev/null && __promptline_vcs_test -e .hg; then',
         \'    if branch=$(hg branch 2>/dev/null); then',
         \'      printf "%s" "${branch_symbol}${branch:-unknown}"',
         \'      return',
@@ -39,7 +49,7 @@ fun! promptline#slices#vcs_branch#function_body(options)
     let lines += [
         \'',
         \'  # svn',
-        \'  if hash svn 2>/dev/null; then',
+        \'  if hash svn 2>/dev/null && __promptline_vcs_test -e .svn; then',
         \'    local svn_info',
         \'    if svn_info=$(svn info 2>/dev/null); then',
         \'      local svn_url=${svn_info#*URL:\ }',
@@ -67,7 +77,7 @@ fun! promptline#slices#vcs_branch#function_body(options)
     let lines += [
         \'',
         \'  # fossil',
-        \'  if hash fossil 2>/dev/null; then',
+        \'  if hash fossil 2>/dev/null && __promptline_vcs_test -f .fslckout; then',
         \'    if branch=$( fossil branch 2>/dev/null ); then',
         \'      branch=${branch##* }',
         \'      printf "%s" "${branch_symbol}${branch:-unknown}"',
