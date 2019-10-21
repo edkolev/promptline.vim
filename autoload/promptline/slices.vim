@@ -56,6 +56,12 @@ fun! promptline#slices#git_status(...)
           \'function_body': readfile(globpath(&rtp, "autoload/promptline/slices/git_status.sh"))}
 endfun
 
+fun! promptline#slices#kubernetes(...)
+  return {
+        \'function_name': '__promptline_kubernetes',
+        \'function_body': readfile(globpath(&rtp, "autoload/promptline/slices/kubernetes.sh"))}
+endfun
+
 " internally used to wrap any string, like \w, \h, $(command) with the given colors / separators
 fun! promptline#slices#wrapper(...)
   return {
@@ -69,3 +75,4 @@ fun! promptline#slices#wrapper(...)
           \'  printf "%s" "${2}${1}${3}"',
           \'}']}
 endfun
+
