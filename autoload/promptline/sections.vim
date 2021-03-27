@@ -91,7 +91,8 @@ fun! s:make_function( function_name, preset, section_names, is_left )
     endfor
   endfor
 
-  let section_closing = a:is_left ? '"${reset_bg}${sep}$reset$space"' : '"$reset"'
+  let left_section_closing = a:preset.options.newline ? '"${reset_bg}${sep}$reset\n"' : '"${reset_bg}${sep}$reset$space"' 
+  let section_closing = a:is_left ? left_section_closing : '"$reset"'
   let func_body += [
         \'',
         \'  # close sections',

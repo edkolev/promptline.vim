@@ -2,6 +2,7 @@
 "
 " Copyright (c) 2013-2019 Evgeni Kolev
 
+let s:DEFAULT_NEWLINE = 0
 let s:DEFAULT_LEFT_ONLY_SECTIONS = [ 'a', 'b', 'c', 'x', 'y', 'z', 'warn' ]
 let s:DEFAULT_LEFT_SECTIONS      = [ 'a', 'b', 'c' ]
 let s:DEFAULT_RIGHT_SECTIONS     = [ 'warn', 'x', 'y', 'z' ]
@@ -16,6 +17,7 @@ fun! promptline#presets#load_preset(preset) abort
   endif
 
   let preset.options = extend(get(preset, 'options', {}), {
+        \'newline': s:DEFAULT_NEWLINE,
         \'left_sections': filter(copy(s:DEFAULT_LEFT_SECTIONS), 'has_key(preset, v:val)'),
         \'right_sections': filter(copy(s:DEFAULT_RIGHT_SECTIONS), 'has_key(preset, v:val)'),
         \'left_only_sections': filter(copy(s:DEFAULT_LEFT_ONLY_SECTIONS), 'has_key(preset, v:val)')}, 'keep')
