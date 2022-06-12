@@ -52,8 +52,13 @@ fun! promptline#slices#conda_env(...)
 endfun
 
 fun! promptline#slices#git_status(...)
+  if exists('*nvim_get_runtime_file')
+    let file_name = nvim_get_runtime_file("autoload/promptline/slices/git_status.sh", v:false)[0]
+  else
+    let file_name = globpath(&rtp, "autoload/promptline/slices/git_status.sh")
+  endif
   return { 'function_name': '__promptline_git_status',
-          \'function_body': readfile(globpath(&rtp, "autoload/promptline/slices/git_status.sh"))}
+          \'function_body': readfile(file_name)}
 endfun
 
 " internally used to wrap any string, like \w, \h, $(command) with the given colors / separators
