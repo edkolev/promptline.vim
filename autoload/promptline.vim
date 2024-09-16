@@ -93,7 +93,7 @@ fun! s:get_shell_escape_codes()
         \'  elif [[ -n ${FISH_VERSION-} ]]; then',
         \"    local noprint='' end_noprint=''",
         \'  else',
-        \"    local noprint='\\[' end_noprint='\\]'",
+        \"    local noprint='' end_noprint=''",
         \'  fi',
         \'  local wrap="$noprint$esc" end_wrap="$end_esc$end_noprint"']
 endfun
@@ -110,7 +110,7 @@ fun! s:get_prompt_variables_installation(prompt)
         \'      __promptline_ps1',
         \'    fi',
         \'  else',
-        \'    PS1="' . join(a:prompt.sections, '') . '"',
+        \'    printf %s "' . join(a:prompt.sections, '') . '"',
         \'  fi']
 endfun
 
@@ -185,9 +185,7 @@ fun! s:get_prompt_installation()
       \'elif [[ -n ${FISH_VERSION-} ]]; then',
       \'  __promptline "$1"',
       \'else',
-      \'  if [[ ! "$PROMPT_COMMAND" == *__promptline* ]]; then',
-      \"    PROMPT_COMMAND='__promptline;'$'\\n'\"$PROMPT_COMMAND\"",
-      \'  fi',
+      \"  PS1='$(__promptline)'",
       \'fi']
 endfun
 
